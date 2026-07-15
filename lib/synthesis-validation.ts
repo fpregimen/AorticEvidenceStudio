@@ -3,6 +3,8 @@ import { copyFile, mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { ContentReview } from "./content-review-model";
 import { supportedSourceIds } from "./specialist-validation";
+import { getSynthesisApprovalBlockers } from "./synthesis-approval";
+import type { SynthesisDraft } from "./synthesis-drafts";
 
 const root = process.cwd(), backups = path.join(root, "database", "local_backups"), audits = path.join(root, "database", "local_audit");
 const iso = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value) && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
@@ -27,14 +29,7 @@ export async function updateSynthesis(input: SynthesisUpdate) {
   const draft = JSON.parse(await readFile(target, "utf8")) as Record<string, unknown>;
   const refs = new Set((draft.draft_findings as Array<{ claim_refs: string[] }>).flatMap((finding) => finding.claim_refs));
   const reviews = await Promise.all(supportedSourceIds.map(async (id) => JSON.parse(await readFile(path.join(root, `database/content_reviews/Q02_${id}.json`), "utf8")) as ContentReview));
-  if (input.decision === "Approved") {
-    for (const ref of refs) {
-      const claim = reviews.flatMap((review) => review.extracted_claims).find((candidate) => candidate.claim_id === ref);
-      if (!claim) throw new Error(`Referenced claim does not exist: ${ref}`);
-      if ((claim.validation_decision ?? "Pending") !== "Approved" || !claim.verified_by_reviewer) throw new Error(`Referenced claim is not approved: ${ref}`);
-    }
-    for (const review of reviews) for (const [index, outcome] of review.outcome_data.entries()) if ((outcome.validation_decision ?? "Pending") !== "Approved" || !outcome.verified_by_reviewer) throw new Error(`Numeric outcome is not approved: ${outcome.outcome_id ?? `${review.source_id}-O${String(index + 1).padStart(2, "0")}`}`);
-  }
+  if (input.decision === "Approved") { const blockers = getSynthesisApprovalBlockers(draft as unknown as SynthesisDraft, reviews); if (blockers.length) throw new Error(`Synthesis approval blocked: ${blockers.map((blocker) => `${blocker.sourceId}/${blocker.itemId}`).join(", ")}`); }
   const previous = String(draft.synthesis_validation_decision ?? "Pending"), approved = input.decision === "Approved";
   for (const review of reviews) {
     let changed = false;

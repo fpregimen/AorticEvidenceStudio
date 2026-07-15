@@ -2,6 +2,7 @@ import "server-only";
 import { copyFile, mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { ContentReview, ValidationDecision } from "./content-review-model";
+import { approvalStatus } from "./approval-completeness";
 
 export const supportedSourceIds = ["AES-RCT-001", "AES-RCT-002", "AES-RCT-003"] as const;
 export type SupportedSourceId = (typeof supportedSourceIds)[number];
@@ -27,10 +28,10 @@ export interface ItemUpdate {
   confirmed: boolean;
 }
 
+function fieldError(fields:Record<string,string>){const error=new Error("Validation requirements are incomplete.")as Error&{fields:Record<string,string>};error.fields=fields;throw error}
 function validateInput(input: ItemUpdate) {
-  if (!["claim", "outcome"].includes(input.itemType) || !input.itemId || !["Approved", "Needs correction", "Excluded"].includes(input.decision)) throw new Error("Malformed validation request.");
-  if (!input.reviewer.trim() || !isoDate(input.reviewDate) || !input.confirmed) throw new Error("Reviewer, valid review date, and source-check confirmation are required.");
-  if (["Needs correction", "Excluded"].includes(input.decision) && !input.reviewerNote.trim()) throw new Error("A reviewer note is required for this decision.");
+  if (!["claim", "outcome"].includes(input.itemType) || !input.itemId || !["Pending","Approved", "Needs correction", "Excluded"].includes(input.decision)) throw new Error("Malformed validation request.");
+  if(input.decision==="Pending")return;const fields:Record<string,string>={};if(!input.reviewer?.trim())fields.reviewer="Reviewer is required.";if(!isoDate(input.reviewDate))fields.reviewDate="A valid review date is required.";if(input.decision==="Approved"&&!input.confirmed)fields.confirmed="Original-source confirmation is required.";if(["Needs correction","Excluded"].includes(input.decision)&&!input.reviewerNote?.trim())fields.reviewerNote=input.decision==="Excluded"?"An exclusion reason is required.":"A correction note is required.";if(Object.keys(fields).length)fieldError(fields)
 }
 
 async function assertSynthesisIsEditable() {
@@ -61,22 +62,22 @@ export async function updateReviewItem(sourceId: string, input: ItemUpdate) {
   let previous = "Pending";
   if (input.itemType === "claim") {
     const item = review.extracted_claims.find((candidate) => candidate.claim_id === input.itemId);
-    if (!item) throw new Error("Claim not found.");
+    if (!item) throw new Error("Claim not found.");if(input.decision==="Approved"){const fields:Record<string,string>={};if(!item.exact_supporting_text?.trim())fields.exact_supporting_text="Exact supporting text is required.";if(![item.page,item.section,item.table,item.figure,item.source_location_note].some(v=>v?.trim()))fields.source_location="A source location is required.";if(Object.keys(fields).length)fieldError(fields)}
     previous = item.validation_decision ?? "Pending";
-    Object.assign(item, { validation_decision: input.decision, reviewer: input.reviewer.trim(), review_date: input.reviewDate, reviewer_note: input.reviewerNote.trim() || null, verified_by_reviewer: ["Approved", "Excluded"].includes(input.decision), suitable_for_generated_answer: false });
+    Object.assign(item, { validation_decision: input.decision, reviewer: input.reviewer.trim()||null, review_date: input.reviewDate||null, reviewer_note: input.reviewerNote.trim() || null, verified_by_reviewer: input.decision==="Approved"&&input.confirmed, suitable_for_generated_answer: false });
   } else {
     const index = review.outcome_data.findIndex((item, itemIndex) => (item.outcome_id ?? `${sourceId}-O${String(itemIndex + 1).padStart(2, "0")}`) === input.itemId);
     if (index < 0) throw new Error("Outcome not found.");
     const item = review.outcome_data[index];
-    if (input.decision === "Approved" && !item.page_or_location?.trim()) throw new Error("A numeric result cannot be approved without a source location.");
+    if(input.decision==="Approved"){const fields:Record<string,string>={};if(!item.page_or_location?.trim())fields.source_location="A source location is required.";if(!item.outcome_name?.trim())fields.outcome_name="Outcome name is required.";if(!item.result_text?.trim()&&(item.numeric_result===null||item.numeric_result===""))fields.result="Result text or a numeric result is required.";if(Object.keys(fields).length)fieldError(fields)}
     previous = item.validation_decision ?? "Pending";
-    Object.assign(item, { outcome_id: input.itemId, validation_decision: input.decision, reviewer: input.reviewer.trim(), review_date: input.reviewDate, reviewer_note: input.reviewerNote.trim() || null, verified_by_reviewer: ["Approved", "Excluded"].includes(input.decision) });
+    Object.assign(item, { outcome_id: input.itemId, validation_decision: input.decision, reviewer: input.reviewer.trim()||null, review_date: input.reviewDate||null, reviewer_note: input.reviewerNote.trim() || null, verified_by_reviewer: input.decision==="Approved"&&input.confirmed });
   }
-  const decisions = [...review.extracted_claims, ...review.outcome_data].map((item) => item.validation_decision ?? "Pending");
   review.reviewer = input.reviewer.trim();
   review.review_date = input.reviewDate;
   review.last_updated = input.reviewDate;
-  review.review_status = decisions.includes("Needs correction") ? "Requires correction" : decisions.every((decision) => decision !== "Pending") ? "Specialist validated" : "In review";
+  const statuses=[...review.extracted_claims,...review.outcome_data].map(approvalStatus);
+  review.review_status = statuses.includes("Needs correction")||statuses.includes("Approval incomplete") ? "Requires correction" : statuses.every((status) => status !== "Pending") ? "Specialist validated" : "In review";
   await atomicJsonUpdate(target, review, { timestamp: new Date().toISOString(), evaluation_question_number: 2, source_id: sourceId, item_id: input.itemId, previous_decision: previous, new_decision: input.decision, reviewer: input.reviewer.trim(), review_date: input.reviewDate, reviewer_note: input.reviewerNote.trim() || null });
   return review;
 }
