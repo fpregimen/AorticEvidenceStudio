@@ -14,3 +14,7 @@ npm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# private local review copies (keep the safety README only)
+/source_documents/private/*
+!/source_documents/private/README.md

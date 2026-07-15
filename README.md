@@ -59,8 +59,11 @@ Live evidence retrieval is **not yet implemented**. The prototype does not call 
 - Source Library v1 completed
 - Initial 10 TBAD and preemptive TEVAR sources registered
 - Core bibliographic metadata verified
+- Content review architecture completed
+- Evaluation Question 2 review workspace created
+- Claim extraction not yet started
 - Claim-level citation review not yet completed
-- Specialist content validation not yet completed
+- Specialist validation not yet started
 - Live evidence retrieval not yet started
 
 ## Next development milestone

@@ -1,0 +1,1 @@
+import Link from "next/link";export default function NotFound(){return <div className="shell py-16"><div className="card mx-auto max-w-xl p-10 text-center"><h1 className="text-2xl font-semibold">Review record not found / レビューレコードが見つかりません</h1><Link href="/evaluation/2/review" className="btn mt-6 inline-block no-underline">Return to review workspace</Link></div></div>}

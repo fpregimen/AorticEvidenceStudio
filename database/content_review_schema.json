@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aorticevidencestudio.org/schemas/content_review_schema.json",
+  "title": "Aortic Evidence Studio Content Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["review_id", "evaluation_question_number", "question", "source_id", "review_status", "extracted_claims", "last_updated"],
+  "properties": {
+    "review_id": {"type": "string", "minLength": 1},
+    "evaluation_question_number": {"type": "integer", "minimum": 1, "maximum": 30},
+    "question": {"type": "string", "minLength": 1},
+    "source_id": {"type": "string", "pattern": "^AES-[A-Z0-9-]+$"},
+    "review_status": {"type": "string", "enum": ["Not started", "In review", "Extraction completed", "Citation verified", "Specialist validated", "Requires correction"]},
+    "reviewer": {"type": ["string", "null"]},
+    "review_date": {"type": ["string", "null"], "format": "date"},
+    "source_access_type": {"type": ["string", "null"]},
+    "source_version_or_date": {"type": ["string", "null"]},
+    "relevant_sections": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "extracted_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim_id", "claim_text", "evidence_category", "verified_by_reviewer", "suitable_for_generated_answer"],
+        "properties": {
+          "claim_id": {"type": "string", "minLength": 1},
+          "claim_text": {"type": ["string", "null"]},
+          "evidence_category": {"type": "string", "enum": ["Published clinical evidence", "Guideline recommendation", "Regulatory information", "Manufacturer IFU information", "Conference abstract", "Bench research", "Animal research", "Expert commentary", "Institutional practice", "AI inference"]},
+          "exact_supporting_text": {"type": ["string", "null"]},
+          "page": {"type": ["string", "null"]},
+          "section": {"type": ["string", "null"]},
+          "table": {"type": ["string", "null"]},
+          "figure": {"type": ["string", "null"]},
+          "source_location_note": {"type": ["string", "null"]},
+          "direct_or_indirect": {"type": ["string", "null"], "enum": ["Direct", "Indirect", "Context only", "Not applicable", null]},
+          "confidence": {"type": ["string", "null"]},
+          "verified_by_reviewer": {"type": "boolean"},
+          "suitable_for_generated_answer": {"type": "boolean"}
+        }
+      }
+    },
+    "guideline_recommendations": {"type": "array", "items": {"type": "object"}},
+    "outcome_data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["outcome_name", "verified_by_reviewer"],
+        "properties": {
+          "outcome_name": {"type": ["string", "null"]},
+          "population": {"type": ["string", "null"]},
+          "intervention": {"type": ["string", "null"]},
+          "comparator": {"type": ["string", "null"]},
+          "follow_up": {"type": ["string", "null"]},
+          "result_text": {"type": ["string", "null"]},
+          "numeric_result": {"type": ["string", "number", "null"]},
+          "page_or_location": {"type": ["string", "null"]},
+          "verified_by_reviewer": {"type": "boolean"}
+        }
+      }
+    },
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "contradictions": {"type": "array", "items": {"type": "string"}},
+    "reviewer_notes": {"type": ["string", "null"]},
+    "last_updated": {"type": "string", "format": "date"}
+  }
+}
