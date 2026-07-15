@@ -10,7 +10,7 @@
     "evaluation_question_number": {"type": "integer", "minimum": 1, "maximum": 30},
     "question": {"type": "string", "minLength": 1},
     "source_id": {"type": "string", "pattern": "^AES-[A-Z0-9-]+$"},
-    "review_status": {"type": "string", "enum": ["Not started", "In review", "Extraction completed", "Citation verified", "Specialist validated", "Requires correction"]},
+    "review_status": {"type": "string", "enum": ["Not started", "In review", "Specialist review in progress", "Extraction completed", "Citation verified", "Specialist validated", "Requires correction"]},
     "reviewer": {"type": ["string", "null"]},
     "review_date": {"type": ["string", "null"], "format": "date"},
     "source_access_type": {"type": ["string", "null"]},
@@ -38,6 +38,10 @@
           "confidence": {"type": ["string", "null"]},
           "verified_by_reviewer": {"type": "boolean"},
           "suitable_for_generated_answer": {"type": "boolean"}
+          ,"validation_decision": {"type": "string", "enum": ["Pending", "Approved", "Needs correction", "Excluded"]}
+          ,"reviewer": {"type": ["string", "null"]}
+          ,"review_date": {"type": ["string", "null"], "format": "date"}
+          ,"reviewer_note": {"type": ["string", "null"]}
         }
       }
     },
@@ -58,6 +62,11 @@
           "numeric_result": {"type": ["string", "number", "null"]},
           "page_or_location": {"type": ["string", "null"]},
           "verified_by_reviewer": {"type": "boolean"}
+          ,"outcome_id": {"type": "string"}
+          ,"validation_decision": {"type": "string", "enum": ["Pending", "Approved", "Needs correction", "Excluded"]}
+          ,"reviewer": {"type": ["string", "null"]}
+          ,"review_date": {"type": ["string", "null"], "format": "date"}
+          ,"reviewer_note": {"type": ["string", "null"]}
         }
       }
     },

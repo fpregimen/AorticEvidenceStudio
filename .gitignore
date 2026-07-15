@@ -18,3 +18,7 @@ npm-debug.log*
 # private local review copies (keep the safety README only)
 /source_documents/private/*
 !/source_documents/private/README.md
+
+# local specialist-validation artifacts
+/database/local_backups/
+/database/local_audit/

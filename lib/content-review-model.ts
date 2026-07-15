@@ -1,29 +1,22 @@
-export type ReviewStatus="Not started"|"In review"|"Extraction completed"|"Citation verified"|"Specialist validated"|"Requires correction";
-export type ItemReviewStatus="Pending"|"Approved"|"Needs correction"|"Excluded";
+export type ReviewStatus="Not started"|"In review"|"Specialist review in progress"|"Extraction completed"|"Citation verified"|"Specialist validated"|"Requires correction";
+export type ValidationDecision="Pending"|"Approved"|"Needs correction"|"Excluded";
+export type ItemReviewStatus=ValidationDecision;
+export interface ValidationFields{validation_decision?:ValidationDecision;reviewer?:string|null;review_date?:string|null;reviewer_note?:string|null}
 export interface ItemReviewDecision{status:ItemReviewStatus;reviewer_name:string;review_date:string;original_source_confirmed:boolean;reviewer_note:string}
 export interface SpecialistValidation{claims:Record<string,ItemReviewDecision>;outcomes:Record<string,ItemReviewDecision>}
-export interface ExtractedClaim{claim_id:string;claim_text:string|null;evidence_category:string;exact_supporting_text:string|null;page:string|null;section:string|null;table:string|null;figure:string|null;source_location_note:string|null;direct_or_indirect:string|null;confidence:string|null;verified_by_reviewer:boolean;suitable_for_generated_answer:boolean}
-export interface OutcomeData{outcome_name:string|null;population:string|null;intervention:string|null;comparator:string|null;follow_up:string|null;result_text:string|null;numeric_result:string|number|null;page_or_location:string|null;verified_by_reviewer:boolean}
+export interface ExtractedClaim extends ValidationFields{claim_id:string;claim_text:string|null;evidence_category:string;exact_supporting_text:string|null;page:string|null;section:string|null;table:string|null;figure:string|null;source_location_note:string|null;direct_or_indirect:string|null;confidence:string|null;verified_by_reviewer:boolean;suitable_for_generated_answer:boolean}
+export interface OutcomeData extends ValidationFields{outcome_id?:string;outcome_name:string|null;population:string|null;intervention:string|null;comparator:string|null;follow_up:string|null;result_text:string|null;numeric_result:string|number|null;page_or_location:string|null;verified_by_reviewer:boolean}
 export interface ContentReview{review_id:string;evaluation_question_number:number;question:string;source_id:string;review_status:ReviewStatus;reviewer:string|null;review_date:string|null;source_access_type:string|null;source_version_or_date:string|null;relevant_sections:string[];study_characteristics?:Record<string,unknown>|null;source_identity_validation?:Record<string,unknown>|null;extracted_claims:ExtractedClaim[];guideline_recommendations:Record<string,unknown>[];outcome_data:OutcomeData[];limitations:string[];contradictions:string[];reviewer_notes:string|null;specialist_validation?:SpecialistValidation;last_updated:string}
 
 export const itemReviewStatuses:ItemReviewStatus[]=["Pending","Approved","Needs correction","Excluded"];
 export const emptyDecision=():ItemReviewDecision=>({status:"Pending",reviewer_name:"",review_date:"",original_source_confirmed:false,reviewer_note:""});
 export const outcomeReviewId=(index:number)=>`outcome-${index+1}`;
-export function sourceLocationPresent(claim:ExtractedClaim){return [claim.page,claim.section,claim.table,claim.figure,claim.source_location_note].some(value=>Boolean(value?.trim()))}
-export function validIsoDate(value:string){return /^\d{4}-\d{2}-\d{2}$/.test(value)&&new Date(`${value}T00:00:00Z`).toISOString().slice(0,10)===value}
+export function sourceLocationPresent(claim:ExtractedClaim){return[claim.page,claim.section,claim.table,claim.figure,claim.source_location_note].some(value=>Boolean(value?.trim()))}
+export function validIsoDate(value:string){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;const date=new Date(`${value}T00:00:00Z`);return!Number.isNaN(date.getTime())&&date.toISOString().slice(0,10)===value}
 export function decisionIsValid(decision:ItemReviewDecision|undefined,kind:"claim"|"outcome",item:ExtractedClaim|OutcomeData){
-  if(!decision||decision.status==="Pending"||decision.status==="Needs correction")return false;
-  if(decision.status==="Approved"){
-    if(!decision.reviewer_name.trim()||!validIsoDate(decision.review_date)||!decision.original_source_confirmed)return false;
-    if(kind==="claim"){const claim=item as ExtractedClaim;if(!claim.exact_supporting_text?.trim()||!sourceLocationPresent(claim))return false}
-    else if(!(item as OutcomeData).page_or_location?.trim())return false;
-  }
-  return true;
+ if(decision){if(decision.status==="Pending"||decision.status==="Needs correction")return false;if(decision.status==="Approved"){if(!decision.reviewer_name.trim()||!validIsoDate(decision.review_date)||!decision.original_source_confirmed)return false;if(kind==="claim"){const claim=item as ExtractedClaim;if(!claim.exact_supporting_text?.trim()||!sourceLocationPresent(claim))return false}else if(!(item as OutcomeData).page_or_location?.trim())return false}return true}
+ if(item.validation_decision==="Pending"||item.validation_decision==="Needs correction"||!item.validation_decision)return false;
+ if(item.validation_decision==="Approved"){if(!item.reviewer?.trim()||!item.review_date||!validIsoDate(item.review_date)||!item.verified_by_reviewer)return false;if(kind==="claim"){const claim=item as ExtractedClaim;if(!claim.exact_supporting_text?.trim()||!sourceLocationPresent(claim))return false}else if(!(item as OutcomeData).page_or_location?.trim())return false}
+ return true;
 }
-export function reviewProgress(review:ContentReview){
-  const validation=review.specialist_validation;
-  const claimDone=review.extracted_claims.filter(claim=>decisionIsValid(validation?.claims[claim.claim_id],"claim",claim)).length;
-  const outcomeDone=review.outcome_data.filter((outcome,index)=>decisionIsValid(validation?.outcomes[outcomeReviewId(index)],"outcome",outcome)).length;
-  const total=review.extracted_claims.length+review.outcome_data.length,completed=claimDone+outcomeDone;
-  return{total,completed,incomplete:total-completed,complete:total>0&&completed===total};
-}
+export function reviewProgress(review:ContentReview){const validation=review.specialist_validation;const claimDone=review.extracted_claims.filter(claim=>decisionIsValid(validation?.claims[claim.claim_id],"claim",claim)).length;const outcomeDone=review.outcome_data.filter((outcome,index)=>decisionIsValid(validation?.outcomes[outcomeReviewId(index)],"outcome",outcome)).length;const total=review.extracted_claims.length+review.outcome_data.length,completed=claimDone+outcomeDone;return{total,completed,incomplete:total-completed,complete:total>0&&completed===total}}

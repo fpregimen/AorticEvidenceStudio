@@ -63,6 +63,10 @@ Live evidence retrieval is **not yet implemented**. The prototype does not call 
 - Evaluation Question 2 review workspace created
 - Original-source extraction completed for the three Evaluation Question 2 RCT publications
 - Evaluation Question 2 synthesis draft created; not specialist validated
+- Specialist validation interface completed
+- Specialist validation pending
+- Synthesis approval pending
+- Public validated answer not yet enabled
 - Claim-level citation review not yet completed
 - Specialist validation not yet started
 - Live evidence retrieval not yet started

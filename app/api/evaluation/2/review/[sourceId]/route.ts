@@ -1,0 +1,2 @@
+import{NextResponse}from"next/server";import{updateReviewItem}from"@/lib/specialist-validation";
+export async function POST(request:Request,{params}:{params:Promise<{sourceId:string}>}){try{const{sourceId}=await params;const body=await request.json();return NextResponse.json(await updateReviewItem(sourceId,body))}catch(error){const fields=error&&typeof error==="object"&&"fields"in error?(error as{fields:unknown}).fields:undefined;return NextResponse.json({error:error instanceof Error?error.message:"Validation update failed.",fields},{status:400})}}

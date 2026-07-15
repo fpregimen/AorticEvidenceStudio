@@ -1,0 +1,8 @@
+import type{ExtractedClaim,OutcomeData,ValidationDecision}from"./content-review-model";
+export type ApprovalDisplayStatus="Pending"|"Approved"|"Approval incomplete"|"Needs correction"|"Excluded";
+export const validReviewDate=(v:unknown)=>typeof v==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&new Date(`${v}T00:00:00Z`).toISOString().slice(0,10)===v;
+const text=(v:unknown)=>typeof v==="string"&&Boolean(v.trim());
+export function missingApprovalFields(item:ExtractedClaim|OutcomeData){const missing:string[]=[];if(!item.verified_by_reviewer)missing.push("original-source confirmation");if(!text(item.reviewer))missing.push("reviewer");if(!validReviewDate(item.review_date))missing.push("review date");if("claim_id"in item){if(!text(item.exact_supporting_text))missing.push("exact supporting text");if(![item.page,item.section,item.table,item.figure,item.source_location_note].some(text))missing.push("source location")}else{if(!text(item.page_or_location))missing.push("source location");if(!text(item.outcome_name))missing.push("outcome name");if(!text(item.result_text)&&!text(item.numeric_result))missing.push("result")};return missing}
+export function approvalStatus(item:ExtractedClaim|OutcomeData):ApprovalDisplayStatus{const decision=(item.validation_decision??"Pending")as ValidationDecision;if(decision==="Approved"&&missingApprovalFields(item).length)return"Approval incomplete";return decision}
+export const isFullyApproved=(item:ExtractedClaim|OutcomeData)=>approvalStatus(item)==="Approved";
+export function reviewHasIncompleteApprovals(review:{extracted_claims:ExtractedClaim[];outcome_data:OutcomeData[]}){return[...review.extracted_claims,...review.outcome_data].some(item=>approvalStatus(item)==="Approval incomplete")}
