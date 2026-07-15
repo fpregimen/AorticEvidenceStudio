@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Specialist Validation v1 is a local-only, read-and-record workflow for Evaluation Question 2. It covers the extracted claims and numeric outcomes from AES-RCT-001, AES-RCT-002, and AES-RCT-003, followed by the synthesis draft. It does not expose the private articles, change medical wording automatically, or connect validated content to the public results page.
+Specialist Validation v1 is a local-only, read-and-record workflow for Evaluation Question 2. It covers the extracted claims and numeric outcomes from AES-RCT-001, AES-RCT-002, and AES-RCT-003, followed by the synthesis draft. It does not expose the private articles or change medical wording automatically. The results page reads the synthesis record but renders it only after the complete approval gate passes.
 
 ## Claim review
 
@@ -27,7 +27,7 @@ A source becomes Specialist validated only when every claim and outcome has a no
 
 The synthesis validator shows its stored findings, limitations, supporting claim IDs, and current decisions. Approval is blocked if a referenced claim is missing, pending, needs correction, excluded, or otherwise unapproved, or if any numeric outcome remains unapproved. Approval requires reviewer name, review date, and explicit confirmation. Returning for correction requires a note.
 
-Only successful synthesis approval sets the synthesis to Specialist validated and makes its referenced, approved claims suitable for generated answers. This does not publish them or alter their wording.
+Only successful synthesis approval sets the synthesis to Specialist validated, makes its referenced approved claims suitable for generated answers, and exposes the stored synthesis on the results page. Returning an approved synthesis for correction removes that eligibility. Source decisions cannot be changed while the synthesis remains approved.
 
 ## Audit and backup behavior
 
@@ -35,4 +35,4 @@ Before each local JSON replacement, the server writes a timestamped backup under
 
 ## Safety boundary
 
-Extraction records what the publication says. Specialist validation confirms the extraction and citation location. Production use additionally requires synthesis approval and a separate future public-results integration. This workflow does not replace future independent quality review.
+Extraction records what the publication says. Specialist validation confirms the extraction and citation location. Results-page use additionally requires explicit synthesis approval and matching safety flags. This workflow does not replace future independent quality review.
