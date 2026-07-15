@@ -22,3 +22,6 @@ npm-debug.log*
 # local specialist-validation artifacts
 /database/local_backups/
 /database/local_audit/
+
+.DS_Store
+**/.DS_Store
