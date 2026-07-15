@@ -16,6 +16,8 @@
     "source_access_type": {"type": ["string", "null"]},
     "source_version_or_date": {"type": ["string", "null"]},
     "relevant_sections": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "study_characteristics": {"type": ["object", "null"]},
+    "source_identity_validation": {"type": ["object", "null"]},
     "extracted_claims": {
       "type": "array",
       "items": {
