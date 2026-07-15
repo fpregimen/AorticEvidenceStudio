@@ -1,0 +1,2 @@
+import{SynthesisValidationClient}from"@/components/synthesis-validation-client";import{getContentReviews}from"@/lib/content-reviews";import{getQ02Synthesis}from"@/lib/synthesis-drafts";import{supportedSourceIds}from"@/lib/specialist-validation";
+export default async function Page(){const[draft,all]=await Promise.all([getQ02Synthesis(),getContentReviews()]),reviews=all.filter(r=>supportedSourceIds.includes(r.source_id as(typeof supportedSourceIds)[number]));return <SynthesisValidationClient draft={draft} reviews={reviews}/>}
