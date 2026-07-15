@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function NotFound(){return <div className="shell py-16"><div className="card mx-auto max-w-xl p-10 text-center"><h1 className="text-2xl font-semibold">Source not found / ソースが見つかりません</h1><p className="mt-3 text-sm text-slate-600">The requested source ID is not registered in the catalog.</p><Link href="/sources" className="btn mt-6 inline-block no-underline">Return to Source Library</Link></div></div>}

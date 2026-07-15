@@ -20,6 +20,8 @@ button:disabled { cursor:not-allowed; opacity:.55; }
 .results-tabs { scrollbar-width:thin; scrollbar-color:#b7c6d2 transparent; overscroll-behavior-x:contain; }
 .results-tabs button { flex:0 0 auto; min-height:44px; }
 .mobile-only { display:none; }
+.source-control { display:block; width:100%; min-height:44px; border:1px solid #cbd5e1; border-radius:10px; background:white; padding:9px 11px; font-weight:400; color:var(--ink); }
+.source-cards { display:none; }
 table { width:100%; border-collapse:collapse; font-size:.86rem; }
 th { background:#f2f6f8; text-align:left; color:#46576a; }
 th,td { padding:13px; border-bottom:1px solid var(--line); vertical-align:top; min-width:135px; }
@@ -39,4 +41,6 @@ th,td { padding:13px; border-bottom:1px solid var(--line); vertical-align:top; m
   .results-tabs{padding-right:30px}
   .results-tabs button{padding:10px 14px}
   th,td{padding:10px;min-width:125px}
+  .source-table{display:none}
+  .source-cards{display:block}
 }

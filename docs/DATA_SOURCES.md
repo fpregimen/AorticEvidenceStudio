@@ -221,3 +221,15 @@ Question
 ```
 
 No specific AI vendor is selected at this stage.
+
+## 14. Source Registration Workflow
+
+1. Register source metadata in `database/source_catalog.csv`.
+2. Run `npm run validate:sources` and resolve all errors.
+3. Add a permitted local source document when applicable.
+4. Perform metadata verification.
+5. Perform citation verification.
+6. Perform specialist review.
+7. Update `verification_status` and `last_verified_date`.
+
+Copyrighted PDFs must not be committed to a public GitHub repository unless redistribution is permitted. Official URLs and metadata may be stored. Patient-identifiable data must never be stored in the catalog or source-document workspace.

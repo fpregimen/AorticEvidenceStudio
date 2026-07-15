@@ -61,3 +61,15 @@ Copyrighted files must not be committed to a public GitHub repository unless red
 ## Sensitive Data
 
 Sensitive patient data and protected health information must never be stored in this directory. This includes identifiable images, names, medical record numbers, dates of birth, exact clinical dates, and any other information that could identify a patient.
+
+## Registration and Review Workflow
+
+1. Register source metadata in `database/source_catalog.csv`.
+2. Run `npm run validate:sources`.
+3. Add a permitted local source document when applicable.
+4. Perform metadata verification.
+5. Perform citation verification.
+6. Perform specialist review.
+7. Update the verification status and last verified date in the catalog.
+
+Copyrighted PDFs must not be committed to a public GitHub repository unless redistribution is permitted. Official URLs and metadata may be stored. Patient-identifiable data must never be stored.

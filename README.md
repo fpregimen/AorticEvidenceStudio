@@ -56,8 +56,10 @@ Live evidence retrieval is **not yet implemented**. The prototype does not call 
 - Evaluation framework completed
 - Evidence source architecture completed
 - Interactive frontend prototype completed
+- Source Library v1 completed
+- Validated evidence sources not yet loaded
 - Live evidence retrieval not yet started
 
 ## Next development milestone
 
-Connect a validated source-ingestion and evidence-retrieval workflow with traceable source passages, explicit verification metadata, and specialist review. This milestone must preserve the evidence-category separation and regulatory safeguards defined in `docs/`.
+Populate and specialist-validate the local source catalog, then connect a retrieval workflow with traceable source passages. This milestone must preserve the evidence-category separation and regulatory safeguards defined in `docs/`.
