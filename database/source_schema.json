@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aorticevidencestudio.org/schemas/source_schema.json",
+  "title": "Aortic Evidence Studio Evidence Source",
+  "description": "Schema for one registered evidence-source record.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_id",
+    "title",
+    "source_type",
+    "region",
+    "language",
+    "last_verified_date",
+    "verification_status"
+  ],
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^AES-[A-Z0-9-]+$",
+      "description": "Stable unique identifier, for example AES-GDL-001."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authors": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "publication_year": {
+      "type": ["integer", "null"],
+      "minimum": 1800,
+      "maximum": 9999
+    },
+    "publication_date": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "Peer-reviewed original clinical study",
+        "Randomized clinical trial",
+        "Prospective registry",
+        "Retrospective study",
+        "Systematic review or meta-analysis",
+        "Clinical guideline",
+        "Consensus statement",
+        "FDA regulatory document",
+        "PMDA regulatory document",
+        "European regulatory document",
+        "Manufacturer IFU",
+        "Japanese package insert",
+        "Clinical trial registry",
+        "Conference abstract",
+        "Technical report",
+        "Bench study",
+        "Animal study",
+        "Expert commentary",
+        "Institutional practice document"
+      ]
+    },
+    "evidence_design": {
+      "type": ["string", "null"]
+    },
+    "evidence_level": {
+      "type": ["string", "null"]
+    },
+    "region": {
+      "type": "string",
+      "enum": [
+        "United States",
+        "Japan",
+        "Europe",
+        "International or multinational"
+      ]
+    },
+    "country": {
+      "type": ["string", "null"]
+    },
+    "clinical_domains": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "diseases": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "procedures": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "devices": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "manufacturer": {
+      "type": ["string", "null"]
+    },
+    "journal_or_organization": {
+      "type": ["string", "null"]
+    },
+    "PMID": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]+$"
+    },
+    "DOI": {
+      "type": ["string", "null"]
+    },
+    "official_url": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "local_file_path": {
+      "type": ["string", "null"]
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "English",
+        "Japanese",
+        "English and Japanese",
+        "Other",
+        "Unknown"
+      ]
+    },
+    "regulatory_status": {
+      "type": ["string", "null"],
+      "enum": [
+        "FDA-approved use",
+        "PMDA-approved use",
+        "CE-marked use",
+        "Investigational use",
+        "Off-label use",
+        "Physician-modified use",
+        "Unapproved use",
+        "Unavailable",
+        "Not applicable",
+        "Unknown",
+        null
+      ]
+    },
+    "approval_region": {
+      "type": ["string", "null"]
+    },
+    "approval_date": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "version": {
+      "type": ["string", "null"]
+    },
+    "is_peer_reviewed": {
+      "type": ["boolean", "null"]
+    },
+    "is_primary_source": {
+      "type": ["boolean", "null"]
+    },
+    "is_current": {
+      "type": ["boolean", "null"]
+    },
+    "superseded_by": {
+      "type": ["string", "null"],
+      "pattern": "^AES-[A-Z0-9-]+$"
+    },
+    "last_verified_date": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "Not reviewed",
+        "Metadata verified",
+        "Citation verified",
+        "Content reviewed",
+        "Specialist validated",
+        "Outdated",
+        "Superseded",
+        "Retracted"
+      ]
+    },
+    "reviewer": {
+      "type": ["string", "null"]
+    },
+    "notes": {
+      "type": ["string", "null"]
+    },
+    "evidence_summary": {
+      "type": ["string", "null"]
+    },
+    "key_findings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "relevant_evaluation_questions": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 30
+      },
+      "uniqueItems": true
+    }
+  }
+}
