@@ -64,6 +64,15 @@
     "limitations": {"type": "array", "items": {"type": "string"}},
     "contradictions": {"type": "array", "items": {"type": "string"}},
     "reviewer_notes": {"type": ["string", "null"]},
+    "specialist_validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claims", "outcomes"],
+      "properties": {
+        "claims": {"type": "object"},
+        "outcomes": {"type": "object"}
+      }
+    },
     "last_updated": {"type": "string", "format": "date"}
   }
 }

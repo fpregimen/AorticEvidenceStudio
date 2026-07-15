@@ -1,3 +1,7 @@
-import "server-only";import{readFile}from"node:fs/promises";import path from"node:path";
-export interface SynthesisDraft{synthesis_id:string;evaluation_question_number:number;status:string;last_updated:string;question:string;scope_note:string;source_ids:string[];identity_outcomes:Array<{source_id:string;outcome:string;warning:string|null}>;draft_findings:Array<{finding:string;claim_refs:string[]}>;safety:{verified_by_reviewer:boolean;specialist_validated:boolean;suitable_for_generated_answer:boolean}}
-export async function getQ02Synthesis(){return JSON.parse(await readFile(path.join(process.cwd(),"database","synthesis_drafts","Q02_PREEMPTIVE_TEVAR_DRAFT.json"),"utf8"))as SynthesisDraft}
+import "server-only";import{readFile,rename,writeFile}from"node:fs/promises";import path from"node:path";
+export type SynthesisDecision="Pending"|"Approve synthesis"|"Return for correction";
+export interface SynthesisReview{decision:SynthesisDecision;reviewer_name:string;review_date:string;confirmed:boolean;reviewer_note:string}
+export interface SynthesisDraft{synthesis_id:string;evaluation_question_number:number;status:string;last_updated:string;question:string;scope_note:string;source_ids:string[];identity_outcomes:Array<{source_id:string;outcome:string;warning:string|null}>;draft_findings:Array<{finding:string;claim_refs:string[]}>;synthesis_review?:SynthesisReview;safety:{verified_by_reviewer:boolean;specialist_validated:boolean;suitable_for_generated_answer:boolean}}
+const file=path.join(process.cwd(),"database","synthesis_drafts","Q02_PREEMPTIVE_TEVAR_DRAFT.json");
+export async function getQ02Synthesis(){return JSON.parse(await readFile(file,"utf8"))as SynthesisDraft}
+export async function saveQ02SynthesisReview(review:SynthesisReview){const current=await getQ02Synthesis(),saved={...current,synthesis_review:review,last_updated:new Date().toISOString().slice(0,10)};const temp=`${file}.${process.pid}.tmp`;await writeFile(temp,`${JSON.stringify(saved,null,2)}\n`,{encoding:"utf8",flag:"wx"});await rename(temp,file);return JSON.parse(await readFile(file,"utf8"))as SynthesisDraft}

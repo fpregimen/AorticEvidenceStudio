@@ -1,1 +1,70 @@
-{"synthesis_id":"Q02_PREEMPTIVE_TEVAR_DRAFT","evaluation_question_number":2,"status":"Extraction draft — not specialist validated","last_updated":"2026-07-15","question":"What evidence supports preemptive TEVAR for uncomplicated acute or subacute type B aortic dissection?","scope_note":"Original-PDF extraction from AES-RCT-001, AES-RCT-002, and AES-RCT-003 only. This is not a clinical recommendation or generated answer.","source_ids":["AES-RCT-001","AES-RCT-002","AES-RCT-003"],"identity_outcomes":[{"source_id":"AES-RCT-001","outcome":"Matched","warning":null},{"source_id":"AES-RCT-002","outcome":"Matched with metadata warning","warning":"Core identity matches. The printed PDF byline and indexed metadata differ regarding Sievers HH; no authorship-credit determination is made."},{"source_id":"AES-RCT-003","outcome":"Matched","warning":"The publisher PDF includes an appended trialist-name correction; the registered original article is present."}],"draft_findings":[{"finding":"The two-year INSTEAD report did not demonstrate a significant survival or composite clinical-event advantage, although remodeling favored TEVAR.","claim_refs":["Q02-RCT001-C02","Q02-RCT001-C03","Q02-RCT001-C04"]},{"finding":"INSTEAD-XL reported lower five-year aorta-specific mortality and disease progression after TEVAR, while the overall all-cause mortality comparison was not significant and late landmark analyses have observational limitations.","claim_refs":["Q02-RCT002-C02","Q02-RCT002-C03","Q02-RCT002-C04","Q02-RCT002-C06"]},{"finding":"ADSORB reported improved one-year false-lumen thrombosis and remodeling measures in acute uncomplicated dissection but was not powered for mortality.","claim_refs":["Q02-RCT003-C02","Q02-RCT003-C03","Q02-RCT003-C04","Q02-RCT003-C06"]}],"safety":{"verified_by_reviewer":false,"specialist_validated":false,"suitable_for_generated_answer":false}}
+{
+  "synthesis_id": "Q02_PREEMPTIVE_TEVAR_DRAFT",
+  "evaluation_question_number": 2,
+  "status": "Extraction draft — not specialist validated",
+  "last_updated": "2026-07-15",
+  "question": "What evidence supports preemptive TEVAR for uncomplicated acute or subacute type B aortic dissection?",
+  "scope_note": "Original-PDF extraction from AES-RCT-001, AES-RCT-002, and AES-RCT-003 only. This is not a clinical recommendation or generated answer.",
+  "source_ids": [
+    "AES-RCT-001",
+    "AES-RCT-002",
+    "AES-RCT-003"
+  ],
+  "identity_outcomes": [
+    {
+      "source_id": "AES-RCT-001",
+      "outcome": "Matched",
+      "warning": null
+    },
+    {
+      "source_id": "AES-RCT-002",
+      "outcome": "Matched with metadata warning",
+      "warning": "Core identity matches. The printed PDF byline and indexed metadata differ regarding Sievers HH; no authorship-credit determination is made."
+    },
+    {
+      "source_id": "AES-RCT-003",
+      "outcome": "Matched",
+      "warning": "The publisher PDF includes an appended trialist-name correction; the registered original article is present."
+    }
+  ],
+  "draft_findings": [
+    {
+      "finding": "The two-year INSTEAD report did not demonstrate a significant survival or composite clinical-event advantage, although remodeling favored TEVAR.",
+      "claim_refs": [
+        "Q02-RCT001-C02",
+        "Q02-RCT001-C03",
+        "Q02-RCT001-C04"
+      ]
+    },
+    {
+      "finding": "INSTEAD-XL reported lower five-year aorta-specific mortality and disease progression after TEVAR, while the overall all-cause mortality comparison was not significant and late landmark analyses have observational limitations.",
+      "claim_refs": [
+        "Q02-RCT002-C02",
+        "Q02-RCT002-C03",
+        "Q02-RCT002-C04",
+        "Q02-RCT002-C06"
+      ]
+    },
+    {
+      "finding": "ADSORB reported improved one-year false-lumen thrombosis and remodeling measures in acute uncomplicated dissection but was not powered for mortality.",
+      "claim_refs": [
+        "Q02-RCT003-C02",
+        "Q02-RCT003-C03",
+        "Q02-RCT003-C04",
+        "Q02-RCT003-C06"
+      ]
+    }
+  ],
+  "safety": {
+    "verified_by_reviewer": false,
+    "specialist_validated": false,
+    "suitable_for_generated_answer": false
+  },
+  "synthesis_review": {
+    "decision": "Approve synthesis",
+    "reviewer_name": "Dai Yamanouchi",
+    "review_date": "2026-07-15",
+    "confirmed": true,
+    "reviewer_note": ""
+  }
+}

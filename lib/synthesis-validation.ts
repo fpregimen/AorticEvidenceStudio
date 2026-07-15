@@ -1,0 +1,7 @@
+export type SelectedSynthesisDecision=null|"Approved"|"Requires correction";
+export type SynthesisDisplayStatus="Not approved"|"Specialist validated"|"Approved with unresolved Evidence"|"Returned for correction";
+export interface SynthesisFormState{selectedDecision:SelectedSynthesisDecision;reviewerName:string;reviewDate:string;confirmed:boolean;reviewerNote:string}
+export function validSynthesisDate(value:string){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;const date=new Date(`${value}T00:00:00Z`);return!Number.isNaN(date.getTime())&&date.toISOString().slice(0,10)===value}
+export function missingSynthesisRequirements(form:SynthesisFormState){return[...(!form.selectedDecision?["decision"]:[]),...(!form.reviewerName.trim()?["reviewer name"]:[]),...(!validSynthesisDate(form.reviewDate)?["valid review date"]:[]),...(!form.confirmed?["synthesis confirmation"]:[]),...(form.selectedDecision==="Requires correction"&&!form.reviewerNote.trim()?["reviewer note"]:[])]}
+export function synthesisCanSave(form:SynthesisFormState){return missingSynthesisRequirements(form).length===0}
+export function synthesisDisplayStatus(decision:"Pending"|"Approve synthesis"|"Return for correction",evidenceComplete:boolean):SynthesisDisplayStatus{return decision==="Approve synthesis"?(evidenceComplete?"Specialist validated":"Approved with unresolved Evidence"):decision==="Return for correction"?"Returned for correction":"Not approved"}
