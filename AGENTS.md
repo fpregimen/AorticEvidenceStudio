@@ -53,6 +53,8 @@ The current MVP focuses on:
 
 ## Evidence workflow
 
+When asked to prepare a source review, follow the permanent, source-type-aware workflow in `docs/CODEX_SOURCE_REVIEW_WORKFLOW.md`.
+
 Use this sequence:
 
 Question
