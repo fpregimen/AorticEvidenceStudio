@@ -3,17 +3,327 @@
   "evaluation_question_number": 2,
   "question": "What evidence supports preemptive TEVAR for uncomplicated acute or subacute type B aortic dissection?",
   "source_id": "AES-GDL-001",
-  "review_status": "Not started",
+  "review_status": "Extraction completed",
   "reviewer": null,
   "review_date": null,
-  "source_access_type": null,
-  "source_version_or_date": null,
-  "relevant_sections": [],
-  "extracted_claims": [],
-  "guideline_recommendations": [],
+  "source_access_type": "Original publisher PDF held in private local source workspace",
+  "source_version_or_date": "Circulation. 2022;146:e334-e482. Published December 13, 2022",
+  "relevant_sections": [
+    "7.4.2. Management of Acute Type B Aortic Dissection",
+    "Recommendations for the Management of Acute Type B Aortic Dissection",
+    "Table 27. Consensus Features of Complicated Acute Type B Aortic Dissection",
+    "Table 28. High-Risk Features in Uncomplicated Acute Type B Aortic Dissection",
+    "Recommendation-Specific Supportive Text"
+  ],
+  "study_characteristics": null,
+  "source_identity_validation": {
+    "outcome": "Matched",
+    "primary_fields": {
+      "doi": "Matched",
+      "pmid": "Matched",
+      "normalized_title": "Matched",
+      "journal": "Matched",
+      "publication_year": "Matched"
+    },
+    "supporting_fields": {
+      "first_author": "Matched",
+      "volume_pages": "Matched",
+      "publication_date": "Matched"
+    },
+    "metadata_warning": null
+  },
+  "extracted_claims": [
+    {
+      "claim_id": "Q02-GDL001-C01",
+      "claim_text": "In all patients with uncomplicated acute type B aortic dissection, medical therapy is recommended as the initial management strategy.",
+      "evidence_category": "Guideline recommendation",
+      "exact_supporting_text": "In all patients with uncomplicated acute type B aortic dissection, medical therapy is recommended as the initial management strategy.",
+      "page": "Printed p. e411; PDF p. 78",
+      "section": "7.4.2. Management of Acute Type B Aortic Dissection",
+      "table": "Recommendations for the Management of Acute Type B Aortic Dissection",
+      "figure": null,
+      "source_location_note": "Recommendation 1; COR 1; LOE B-NR.",
+      "direct_or_indirect": "Direct",
+      "confidence": "High for extraction; pending specialist review",
+      "verified_by_reviewer": false,
+      "suitable_for_generated_answer": false,
+      "validation_decision": "Pending",
+      "reviewer": null,
+      "review_date": null,
+      "reviewer_note": null
+    },
+    {
+      "claim_id": "Q02-GDL001-C02",
+      "claim_text": "In patients with acute type B aortic dissection and rupture or other complications (Table 27), intervention is recommended.",
+      "evidence_category": "Guideline recommendation",
+      "exact_supporting_text": "In patients with acute type B aortic dissection and rupture or other complications (Table 27), intervention is recommended.",
+      "page": "Printed p. e411; PDF p. 78",
+      "section": "7.4.2. Management of Acute Type B Aortic Dissection",
+      "table": "Recommendation 2; Table 27",
+      "figure": null,
+      "source_location_note": "Recommendation 2; COR 1; LOE C-LD. This recommendation concerns complicated acute TBAD, not uncomplicated acute TBAD.",
+      "direct_or_indirect": "Context only",
+      "confidence": "High for extraction; pending specialist review",
+      "verified_by_reviewer": false,
+      "suitable_for_generated_answer": false,
+      "validation_decision": "Pending",
+      "reviewer": null,
+      "review_date": null,
+      "reviewer_note": null
+    },
+    {
+      "claim_id": "Q02-GDL001-C03",
+      "claim_text": "In patients with rupture, in the presence of suitable anatomy, endovascular stent grafting, rather than open surgical repair, is recommended.",
+      "evidence_category": "Guideline recommendation",
+      "exact_supporting_text": "In patients with rupture, in the presence of suitable anatomy, endovascular stent grafting, rather than open surgical repair, is recommended.",
+      "page": "Printed p. e411; PDF p. 78",
+      "section": "7.4.2. Management of Acute Type B Aortic Dissection",
+      "table": "Recommendation 2",
+      "figure": null,
+      "source_location_note": "Recommendation 2 subrecommendation for rupture; COR 1; LOE C-EO. This recommendation concerns rupture, not prophylactic treatment of uncomplicated TBAD.",
+      "direct_or_indirect": "Context only",
+      "confidence": "High for extraction; pending specialist review",
+      "verified_by_reviewer": false,
+      "suitable_for_generated_answer": false,
+      "validation_decision": "Pending",
+      "reviewer": null,
+      "review_date": null,
+      "reviewer_note": null
+    },
+    {
+      "claim_id": "Q02-GDL001-C04",
+      "claim_text": "In patients with other complications, in the presence of suitable anatomy, the use of endovascular approaches, rather than open surgical repair, is reasonable.",
+      "evidence_category": "Guideline recommendation",
+      "exact_supporting_text": "In patients with other complications, in the presence of suitable anatomy, the use of endovascular approaches, rather than open surgical repair, is reasonable.",
+      "page": "Printed p. e411; PDF p. 78",
+      "section": "7.4.2. Management of Acute Type B Aortic Dissection",
+      "table": "Recommendation 2",
+      "figure": null,
+      "source_location_note": "Recommendation 2 subrecommendation for complications other than rupture; COR 2a; LOE C-LD. This recommendation concerns complicated acute TBAD.",
+      "direct_or_indirect": "Context only",
+      "confidence": "High for extraction; pending specialist review",
+      "verified_by_reviewer": false,
+      "suitable_for_generated_answer": false,
+      "validation_decision": "Pending",
+      "reviewer": null,
+      "review_date": null,
+      "reviewer_note": null
+    },
+    {
+      "claim_id": "Q02-GDL001-C05",
+      "claim_text": "In patients with uncomplicated acute type B aortic dissection who have high-risk anatomic features (Table 28), endovascular management may be considered.",
+      "evidence_category": "Guideline recommendation",
+      "exact_supporting_text": "In patients with uncomplicated acute type B aortic dissection who have high-risk anatomic features (Table 28), endovascular management may be considered.",
+      "page": "Printed p. e411; PDF p. 78",
+      "section": "7.4.2. Management of Acute Type B Aortic Dissection",
+      "table": "Recommendation 3; Table 28",
+      "figure": null,
+      "source_location_note": "Recommendation 3; COR 2b; LOE B-R. The recommendation says endovascular management may be considered and does not recommend it routinely for every patient with uncomplicated acute TBAD.",
+      "direct_or_indirect": "Direct",
+      "confidence": "High for extraction; pending specialist review",
+      "verified_by_reviewer": false,
+      "suitable_for_generated_answer": false,
+      "validation_decision": "Pending",
+      "reviewer": null,
+      "review_date": null,
+      "reviewer_note": null
+    },
+    {
+      "claim_id": "Q02-GDL001-C06",
+      "claim_text": "Table 28 identifies imaging and clinical features associated with higher risk in otherwise uncomplicated acute type B aortic dissection.",
+      "evidence_category": "Guideline recommendation",
+      "exact_supporting_text": "High-Risk Imaging Findings: Maximal aortic diameter >40 mm; False-lumen diameter >20-22 mm; Entry tear >10 mm; Entry tear on lesser curvature; Increase in total aortic diameter of >5 mm between serial imaging studies; Bloody pleural effusion; Imaging-only evidence of malperfusion. High-Risk Clinical Findings: Refractory hypertension despite >3 different classes of antihypertensive medications at maximal recommended or tolerated doses; Refractory pain persisting >12 h despite maximal recommended or tolerated doses; Need for readmission.",
+      "page": "Printed p. e411; PDF p. 78",
+      "section": "7.4.2. Management of Acute Type B Aortic Dissection",
+      "table": "Table 28. High-Risk Features in Uncomplicated Acute Type B Aortic Dissection",
+      "figure": null,
+      "source_location_note": "The table separates high-risk imaging findings from high-risk clinical findings. Recommendation 3 specifically says high-risk anatomic features; specialist review should confirm how the clinical findings should be applied to that recommendation.",
+      "direct_or_indirect": "Direct",
+      "confidence": "High for transcription; interpretation pending specialist review",
+      "verified_by_reviewer": false,
+      "suitable_for_generated_answer": false,
+      "validation_decision": "Pending",
+      "reviewer": null,
+      "review_date": null,
+      "reviewer_note": null
+    },
+    {
+      "claim_id": "Q02-GDL001-C07",
+      "claim_text": "The guideline states that the ADSORB trial demonstrated differences in remodeling-related findings, while the primary clinical benefits remained unknown.",
+      "evidence_category": "Published clinical evidence",
+      "exact_supporting_text": "TEVAR was superior to optimal medical management alone with significant differences in incomplete or no false-lumen thrombosis, aortic dilation, and rupture, but the primary clinical benefits are unknown.",
+      "page": "Printed p. e412; PDF p. 79",
+      "section": "7.4.2. Recommendation-Specific Supportive Text for Recommendation 3",
+      "table": null,
+      "figure": null,
+      "source_location_note": "Guideline summary of ADSORB. False-lumen thrombosis and aortic dilation are remodeling/imaging findings and must not be treated as proof of a mortality benefit.",
+      "direct_or_indirect": "Direct",
+      "confidence": "High for guideline-text extraction; underlying trial remains the primary source for trial outcomes",
+      "verified_by_reviewer": false,
+      "suitable_for_generated_answer": false,
+      "validation_decision": "Pending",
+      "reviewer": null,
+      "review_date": null,
+      "reviewer_note": null
+    },
+    {
+      "claim_id": "Q02-GDL001-C08",
+      "claim_text": "The guideline states that INSTEAD-XL associated prophylactic TEVAR plus optimal medical therapy with improved 5-year aorta-specific survival and delayed disease progression in uncomplicated type B aortic dissection.",
+      "evidence_category": "Published clinical evidence",
+      "exact_supporting_text": "In the INSTEAD-XL (Investigation of Stent-grafts in Aortic Dissection) trial, in patients with uncomplicated type B aortic dissection, prophylactic TEVAR plus optimal medical was associated with improved 5-year aorta-specific survival and delayed disease progression.",
+      "page": "Printed p. e412; PDF p. 79",
+      "section": "7.4.2. Recommendation-Specific Supportive Text for Recommendation 3",
+      "table": null,
+      "figure": null,
+      "source_location_note": "Guideline summary of INSTEAD-XL. The original PDF wording is transcribed exactly and omits the word 'therapy' after 'optimal medical.' The sentence does not label the population acute; specialist review should preserve the distinction from the acute population in Recommendation 3 and consult the underlying trial for outcome details.",
+      "direct_or_indirect": "Direct",
+      "confidence": "High for guideline-text extraction; underlying trial remains the primary source for trial outcomes",
+      "verified_by_reviewer": false,
+      "suitable_for_generated_answer": false,
+      "validation_decision": "Pending",
+      "reviewer": null,
+      "review_date": null,
+      "reviewer_note": null
+    },
+    {
+      "claim_id": "Q02-GDL001-C09",
+      "claim_text": "The guideline states that larger trials with longer-term data are still needed and that the optimal timing for TEVAR remains unknown.",
+      "evidence_category": "Published clinical evidence",
+      "exact_supporting_text": "As the long-term mortality rate for type B aortic dissection that is managed medically and is strongly related to aortic events, the findings from the ADSORB and INSTEAD-XL trials appear promising, but larger trials with longer-term data are still needed. What remains unknown is the optimal timing for TEVAR.",
+      "page": "Printed p. e412; PDF p. 79",
+      "section": "7.4.2. Recommendation-Specific Supportive Text for Recommendation 3",
+      "table": null,
+      "figure": null,
+      "source_location_note": "This uncertainty statement follows the guideline's summaries of ADSORB and INSTEAD-XL.",
+      "direct_or_indirect": "Direct",
+      "confidence": "High for extraction; pending specialist review",
+      "verified_by_reviewer": false,
+      "suitable_for_generated_answer": false,
+      "validation_decision": "Pending",
+      "reviewer": null,
+      "review_date": null,
+      "reviewer_note": null
+    }
+  ],
+  "guideline_recommendations": [
+    {
+      "recommendation_number": "1",
+      "recommendation": "In all patients with uncomplicated acute type B aortic dissection, medical therapy is recommended as the initial management strategy.",
+      "class_of_recommendation": "1",
+      "level_of_evidence": "B-NR",
+      "population": "Uncomplicated acute type B aortic dissection",
+      "location": "Printed p. e411; PDF p. 78; Section 7.4.2"
+    },
+    {
+      "recommendation_number": "2",
+      "recommendation": "In patients with acute type B aortic dissection and rupture or other complications (Table 27), intervention is recommended.",
+      "class_of_recommendation": "1",
+      "level_of_evidence": "C-LD",
+      "population": "Complicated acute type B aortic dissection",
+      "location": "Printed p. e411; PDF p. 78; Section 7.4.2; Table 27"
+    },
+    {
+      "recommendation_number": "2 - rupture",
+      "recommendation": "In patients with rupture, in the presence of suitable anatomy, endovascular stent grafting, rather than open surgical repair, is recommended.",
+      "class_of_recommendation": "1",
+      "level_of_evidence": "C-EO",
+      "population": "Acute type B aortic dissection with rupture and suitable anatomy",
+      "location": "Printed p. e411; PDF p. 78; Section 7.4.2"
+    },
+    {
+      "recommendation_number": "2 - other complications",
+      "recommendation": "In patients with other complications, in the presence of suitable anatomy, the use of endovascular approaches, rather than open surgical repair, is reasonable.",
+      "class_of_recommendation": "2a",
+      "level_of_evidence": "C-LD",
+      "population": "Acute type B aortic dissection with complications other than rupture and suitable anatomy",
+      "location": "Printed p. e411; PDF p. 78; Section 7.4.2"
+    },
+    {
+      "recommendation_number": "3",
+      "recommendation": "In patients with uncomplicated acute type B aortic dissection who have high-risk anatomic features (Table 28), endovascular management may be considered.",
+      "class_of_recommendation": "2b",
+      "level_of_evidence": "B-R",
+      "population": "Uncomplicated acute type B aortic dissection with high-risk anatomic features",
+      "location": "Printed p. e411; PDF p. 78; Section 7.4.2; Table 28"
+    }
+  ],
   "outcome_data": [],
-  "limitations": [],
+  "limitations": [
+    "Recommendation 3 is limited to uncomplicated acute type B aortic dissection with high-risk anatomic features; it is not a recommendation for routine prophylactic TEVAR in every uncomplicated acute case.",
+    "Section 7.4.2 does not provide a separate recommendation for uncomplicated subacute or chronic type B aortic dissection.",
+    "The supportive text summarizes ADSORB and INSTEAD-XL, but those trial publications remain the primary sources for numerical outcomes and population definitions.",
+    "The guideline explicitly states that the primary clinical benefits in ADSORB were unknown and that larger trials with longer-term data were still needed.",
+    "The optimal timing for TEVAR is stated to be unknown."
+  ],
   "contradictions": [],
-  "reviewer_notes": null,
-  "last_updated": "2026-07-15"
+  "reviewer_notes": "Original-source extraction only. No item has been specialist validated, verified by a reviewer, or made suitable for generated answers. Table 27 complicated features and Recommendation 2 are retained as context so they are not conflated with uncomplicated acute TBAD. No numerical outcome record was created from the guideline's secondary summaries of trials.",
+  "last_updated": "2026-07-16",
+  "specialist_validation": {
+    "claims": {
+      "Q02-GDL001-C01": {
+        "status": "Approved",
+        "reviewer_name": "DY",
+        "review_date": "2026-07-15",
+        "original_source_confirmed": true,
+        "reviewer_note": ""
+      },
+      "Q02-GDL001-C02": {
+        "status": "Approved",
+        "reviewer_name": "DY",
+        "review_date": "2026-07-15",
+        "original_source_confirmed": true,
+        "reviewer_note": ""
+      },
+      "Q02-GDL001-C03": {
+        "status": "Approved",
+        "reviewer_name": "DY",
+        "review_date": "2026-07-15",
+        "original_source_confirmed": true,
+        "reviewer_note": ""
+      },
+      "Q02-GDL001-C04": {
+        "status": "Approved",
+        "reviewer_name": "DY",
+        "review_date": "2026-07-15",
+        "original_source_confirmed": true,
+        "reviewer_note": ""
+      },
+      "Q02-GDL001-C05": {
+        "status": "Approved",
+        "reviewer_name": "DY",
+        "review_date": "2026-07-15",
+        "original_source_confirmed": true,
+        "reviewer_note": ""
+      },
+      "Q02-GDL001-C06": {
+        "status": "Approved",
+        "reviewer_name": "DY",
+        "review_date": "2026-07-15",
+        "original_source_confirmed": true,
+        "reviewer_note": ""
+      },
+      "Q02-GDL001-C07": {
+        "status": "Approved",
+        "reviewer_name": "DY",
+        "review_date": "2026-07-15",
+        "original_source_confirmed": true,
+        "reviewer_note": ""
+      },
+      "Q02-GDL001-C08": {
+        "status": "Approved",
+        "reviewer_name": "DY",
+        "review_date": "2026-07-15",
+        "original_source_confirmed": true,
+        "reviewer_note": ""
+      },
+      "Q02-GDL001-C09": {
+        "status": "Approved",
+        "reviewer_name": "DY",
+        "review_date": "2026-07-15",
+        "original_source_confirmed": true,
+        "reviewer_note": ""
+      }
+    },
+    "outcomes": {}
+  }
 }
