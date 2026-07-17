@@ -3,7 +3,7 @@ import type { ContentReview, ExtractedClaim, OutcomeData } from "../lib/content-
 import { finalizationPreflight, loadReviewWorkflowContext, parseGitPorcelain, requireExistingReview, requireQuestionAndSourceIds, unrelatedGitChanges } from "../lib/review-workflow.ts";
 const root = process.cwd(), context = await loadReviewWorkflowContext(root, "Q02", "AES-REG-001");
 requireExistingReview(context); assert.equal(context.sourceId, "AES-REG-001"); assert.equal(context.questionId, "Q02");
-const q03 = await loadReviewWorkflowContext(root, "Q03", "AES-GDL-001"); assert.equal(q03.review, null, "Q03 cannot reuse a Q02 review file");
+const q03 = await loadReviewWorkflowContext(root, "Q03", "AES-GDL-001"); requireExistingReview(q03); assert.equal(q03.review.evaluation_question_number, 3, "Q03 loads its question-3 review"); assert.equal(q03.review.review_id, "Q03-AES-GDL-001", "Q03 cannot reuse the Q02 review file"); assert.notEqual(q03.review.review_id, "Q02-AES-GDL-001");
 await assert.rejects(() => loadReviewWorkflowContext(root, "Q99", "AES-REG-001"), /Unknown or unsupported question/);
 await assert.rejects(() => loadReviewWorkflowContext(root, "Q02", "AES-REG-999"), /Unknown or unsupported source/);
 for (const unsafe of ["../AES-REG-001", "AES-REG-001/../../etc", "AES-REG-001%2F..%2F.."]) assert.throws(() => requireQuestionAndSourceIds(["Q02", unsafe]), /Unsafe or invalid/);
