@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+const questions = JSON.parse(await readFile(new URL("../database/evaluation_questions.json", import.meta.url), "utf8")) as Array<Record<string, unknown>>;
+const q02 = questions.find(question => question.question_id === "Q02"), q03 = questions.find(question => question.question_id === "Q03");
+assert.ok(q02); assert.ok(q03); assert.equal(q02?.question_number, 2); assert.equal(q03?.question_number, 3);
+assert.equal(q02?.wording_en, "What evidence supports preemptive TEVAR for uncomplicated acute or subacute type B aortic dissection?");
+assert.equal(q03?.wording_en, "Which high-risk imaging or clinical features are used to select patients with uncomplicated TBAD for early TEVAR?");
+for (const question of [q02!, q03!]) for (const field of ["wording_ja", "clinical_domain", "implementation_status"]) assert.equal(typeof question[field], "string");
+const resultsPage = await readFile(new URL("../app/results/page.tsx", import.meta.url), "utf8"), resultsData = await readFile(new URL("../lib/results-data.ts", import.meta.url), "utf8");
+assert.match(resultsPage, /searchParams/); assert.match(resultsPage, /question\.question_id === "Q02"/); assert.match(resultsData, /draft\.synthesis_review\?\.decision !== "Approve synthesis"/); assert.doesNotMatch(resultsData, /AES-OBS-002/);
+console.log("Question registry and Results gating tests: 12 passed");

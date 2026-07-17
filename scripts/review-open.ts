@@ -1,10 +1,12 @@
 import { spawnSync } from "node:child_process";
-import { loadReviewWorkflowContext, requireSingleSourceId } from "../lib/review-workflow.ts";
+import { loadReviewWorkflowContext, requireExistingReview, requireQuestionAndSourceIds } from "../lib/review-workflow.ts";
 
 try {
-  const sourceId = requireSingleSourceId(process.argv.slice(2));
-  await loadReviewWorkflowContext(process.cwd(), sourceId);
-  const url = `http://localhost:3000/evaluation/2/review/${encodeURIComponent(sourceId)}`;
+  const { questionId, sourceId } = requireQuestionAndSourceIds(process.argv.slice(2));
+  const context = await loadReviewWorkflowContext(process.cwd(), questionId, sourceId);
+  requireExistingReview(context);
+  const segment = questionId === "Q02" ? "2" : questionId;
+  const url = `http://localhost:3000/evaluation/${segment}/review/${encodeURIComponent(sourceId)}`;
   if (process.platform !== "darwin") {
     console.log(`Open this review URL: ${url}`);
   } else {

@@ -1,1 +1,3 @@
-import {SupportPage} from "@/components/support-page";export default function Page(){return <SupportPage kind="evaluation"/>}
+import { EvaluationQuestionsClient } from "@/components/evaluation-questions-client";
+import { getEvaluationQuestions } from "@/lib/evaluation-questions";
+export default async function Page() { return <EvaluationQuestionsClient questions={await getEvaluationQuestions()} /> }

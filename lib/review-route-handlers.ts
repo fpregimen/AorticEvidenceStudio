@@ -1,0 +1,39 @@
+import { NextResponse } from "next/server";
+import { getContentReview, isRegisteredContentReviewSourceId, saveContentReview } from "./content-reviews";
+import { decisionIsValid, itemReviewStatuses, outcomeReviewId, type ContentReview, type ItemReviewDecision } from "./content-review-model";
+
+function decision(value: unknown): value is ItemReviewDecision {
+  if (!value || typeof value !== "object") return false;
+  const item = value as Record<string, unknown>;
+  return itemReviewStatuses.includes(item.status as never) && typeof item.reviewer_name === "string" && typeof item.review_date === "string" && typeof item.original_source_confirmed === "boolean" && typeof item.reviewer_note === "string";
+}
+
+export async function getReviewResponse(questionId: string, sourceId: string) {
+  if (!await isRegisteredContentReviewSourceId(questionId, sourceId)) return NextResponse.json({ error: "Unsupported question or source ID" }, { status: 404 });
+  const review = await getContentReview(questionId, sourceId);
+  return review ? NextResponse.json(review, { headers: { "Cache-Control": "no-store" } }) : NextResponse.json({ error: "Review not found" }, { status: 404 });
+}
+
+export async function putReviewResponse(request: Request, questionId: string, sourceId: string) {
+  try {
+    if (!await isRegisteredContentReviewSourceId(questionId, sourceId)) return NextResponse.json({ error: "Unsupported question or source ID" }, { status: 404 });
+    const current = await getContentReview(questionId, sourceId);
+    if (!current) return NextResponse.json({ error: "Review not found" }, { status: 404 });
+    const body = await request.json() as Partial<ContentReview>;
+    const validation = body.specialist_validation;
+    if (!validation || typeof validation.claims !== "object" || typeof validation.outcomes !== "object") return NextResponse.json({ error: "Invalid validation data" }, { status: 400 });
+    for (const claim of current.extracted_claims) {
+      const value = validation.claims[claim.claim_id];
+      if (!decision(value)) return NextResponse.json({ error: `Invalid review decision for ${claim.claim_id}` }, { status: 400 });
+      if (value.status === "Approved" && !decisionIsValid(value, "claim", claim)) return NextResponse.json({ error: `Approved decision for ${claim.claim_id} is missing required confirmation, reviewer, date, supporting text, or source location.` }, { status: 400 });
+    }
+    for (const [index, outcome] of current.outcome_data.entries()) {
+      const id = outcomeReviewId(index), value = validation.outcomes[id];
+      if (!decision(value)) return NextResponse.json({ error: `Invalid review decision for ${id}` }, { status: 400 });
+      if (value.status === "Approved" && !decisionIsValid(value, "outcome", outcome)) return NextResponse.json({ error: `Approved decision for ${id} is missing required confirmation, reviewer, date, or source location.` }, { status: 400 });
+    }
+    return NextResponse.json(await saveContentReview(questionId, { ...current, specialist_validation: validation }), { headers: { "Cache-Control": "no-store" } });
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Unable to save review" }, { status: 400 });
+  }
+}

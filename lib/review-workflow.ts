@@ -2,13 +2,15 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import type { ContentReview, ItemReviewDecision } from "./content-review-model.ts";
 import { outcomeReviewId, sourceLocationPresent, validIsoDate } from "./content-review-model.ts";
-import { isRegisteredReviewSourceId, isSafeReviewSourceId } from "./review-source-validation.ts";
+import { expectedReviewFilename, isSafeReviewQuestionId, isSafeReviewSourceId } from "./review-source-validation.ts";
 import { parseCsv } from "./source-csv.ts";
 
 export interface ReviewWorkflowContext {
+  questionId: string;
+  questionNumber: number;
   sourceId: string;
   source: Record<string, string>;
-  review: ContentReview;
+  review: ContentReview | null;
   reviewRelativePath: string;
   reviewAbsolutePath: string;
   expectedPdfPattern: string;
@@ -31,46 +33,61 @@ export interface FinalizationPreflight {
 
 type GitChange = { path: string; status: string };
 
-export function requireSingleSourceId(args: string[]) {
-  if (args.length !== 1) throw new Error("Provide exactly one source ID, for example: AES-REG-001");
-  const sourceId = args[0];
+export function requireQuestionAndSourceIds(args: string[]) {
+  if (args.length !== 2) throw new Error("Provide exactly one question ID and one source ID, for example: Q03 AES-GDL-001");
+  const [questionId, sourceId] = args;
+  if (!isSafeReviewQuestionId(questionId)) throw new Error("Unsafe or invalid question ID");
   if (!isSafeReviewSourceId(sourceId)) throw new Error("Unsafe or invalid source ID");
-  return sourceId;
+  return { questionId, sourceId };
 }
 
-export async function loadReviewWorkflowContext(root: string, sourceId: string): Promise<ReviewWorkflowContext> {
+export async function loadReviewWorkflowContext(root: string, questionId: string, sourceId: string): Promise<ReviewWorkflowContext> {
+  if (!isSafeReviewQuestionId(questionId)) throw new Error("Unsafe or invalid question ID");
   if (!isSafeReviewSourceId(sourceId)) throw new Error("Unsafe or invalid source ID");
   const catalogPath = path.join(root, "database", "source_catalog.csv");
+  const questionsPath = path.join(root, "database", "evaluation_questions.json");
   const reviewDir = path.join(root, "database", "content_reviews");
   const privateDir = path.join(root, "source_documents", "private");
-  const [catalogText, reviewFiles, privateFiles] = await Promise.all([
+  const [catalogText, questionsText, privateFiles] = await Promise.all([
     readFile(catalogPath, "utf8"),
-    readdir(reviewDir),
+    readFile(questionsPath, "utf8"),
     readdir(privateDir).catch((error: NodeJS.ErrnoException) => error.code === "ENOENT" ? [] : Promise.reject(error)),
   ]);
   const sources = parseCsv(catalogText);
+  const questions = JSON.parse(questionsText) as Array<{ question_id: string; question_number: number }>;
+  const question = questions.find(candidate => candidate.question_id === questionId);
+  if (!question) throw new Error("Unknown or unsupported question ID");
   const source = sources.find((row) => row.source_id === sourceId);
-  const entries = await Promise.all(reviewFiles.filter((file) => file.endsWith(".json")).map(async (file) => ({
-    file,
-    review: JSON.parse(await readFile(path.join(reviewDir, file), "utf8")) as ContentReview,
-  })));
-  const entry = entries.find((candidate) => candidate.review.source_id === sourceId);
-  const catalogIds = new Set(sources.map((row) => row.source_id));
-  const reviewIds = new Set(entries.map((candidate) => candidate.review.source_id));
-  if (!source || !entry || !isRegisteredReviewSourceId(sourceId, catalogIds, reviewIds)) throw new Error("Unknown or unsupported source ID");
-  const reviewAbsolutePath = path.resolve(reviewDir, entry.file);
+  if (!source) throw new Error("Unknown or unsupported source ID");
+  const relevantQuestions = (source.relevant_evaluation_questions ?? "").split(";").map(value => Number(value.trim())).filter(Number.isFinite);
+  if (!relevantQuestions.includes(question.question_number)) throw new Error("Source ID is not registered for this question");
+  const filename = expectedReviewFilename(questionId, sourceId);
+  const reviewAbsolutePath = path.resolve(reviewDir, filename);
   if (path.dirname(reviewAbsolutePath) !== path.resolve(reviewDir)) throw new Error("Unsafe review record path");
+  let review: ContentReview | null = null;
+  try {
+    review = JSON.parse(await readFile(reviewAbsolutePath, "utf8")) as ContentReview;
+    if (review.source_id !== sourceId || review.evaluation_question_number !== question.question_number) throw new Error("Cross-question review-file mismatch");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
   const pdfMatches = privateFiles.filter((file) => file.startsWith(`${sourceId}_`) && file.toLowerCase().endsWith(".pdf"));
   if (pdfMatches.length > 1) throw new Error(`Multiple private PDFs match ${sourceId}; keep exactly one source review copy`);
   return {
+    questionId,
+    questionNumber: question.question_number,
     sourceId,
     source,
-    review: entry.review,
-    reviewRelativePath: path.posix.join("database", "content_reviews", entry.file),
+    review,
+    reviewRelativePath: path.posix.join("database", "content_reviews", filename),
     reviewAbsolutePath,
     expectedPdfPattern: `${sourceId}_${source.publication_year || "YEAR"}_*.pdf`,
     privatePdfBasename: pdfMatches[0] ?? null,
   };
+}
+
+export function requireExistingReview(context: ReviewWorkflowContext): asserts context is ReviewWorkflowContext & { review: ContentReview } {
+  if (!context.review) throw new Error(`Review record not found: ${context.reviewRelativePath}`);
 }
 
 function itemDecision(review: ContentReview, kind: "claim" | "outcome", index: number): ItemReviewDecision | undefined {

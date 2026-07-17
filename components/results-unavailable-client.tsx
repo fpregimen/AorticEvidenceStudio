@@ -1,0 +1,6 @@
+"use client";
+import Link from "next/link";
+import type { EvaluationQuestion } from "@/lib/evaluation-questions";
+import { t } from "@/lib/i18n";
+import { useLanguage } from "./language-provider";
+export function ResultsUnavailableClient({ question }: { question: EvaluationQuestion }) { const { language } = useLanguage(); return <main className="shell py-12"><div className="prototype-notice rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm font-bold text-blue-900">{t(language, "Prototype demonstration — not a live literature search.", "プロトタイプ表示 — 実際の文献検索結果ではありません。")}</div><div className="card mt-7 p-7"><div className="eyebrow">{question.question_id}</div><h1 className="mt-3 text-2xl font-semibold">{language === "ja" ? question.wording_ja : question.wording_en}</h1><p className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 font-semibold text-amber-950">{t(language, "No specialist-approved synthesis is available for this question. Unapproved content is not shown on Results.", "この質問には専門医が承認した統合結果がありません。未承認の内容は結果ページに表示されません。")}</p><Link className="mt-5 inline-block font-bold text-blue-700" href="/evaluation">{t(language, "Return to evaluation questions", "評価質問一覧に戻る")} →</Link></div></main> }

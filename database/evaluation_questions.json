@@ -1,0 +1,20 @@
+[
+  {
+    "question_id": "Q02",
+    "question_number": 2,
+    "wording_en": "What evidence supports preemptive TEVAR for uncomplicated acute or subacute type B aortic dissection?",
+    "wording_ja": "合併症を伴わない急性または亜急性B型大動脈解離に対する予防的TEVARを支持するエビデンスは何ですか？",
+    "clinical_domain": "Uncomplicated acute or subacute type B aortic dissection (TBAD)",
+    "implementation_status": "Complete",
+    "synthesis_filename": "Q02_PREEMPTIVE_TEVAR_DRAFT.json"
+  },
+  {
+    "question_id": "Q03",
+    "question_number": 3,
+    "wording_en": "Which high-risk imaging or clinical features are used to select patients with uncomplicated TBAD for early TEVAR?",
+    "wording_ja": "合併症を伴わないB型大動脈解離に対する早期TEVARの適応患者を選定する際、どのような高リスク画像所見または臨床的特徴が用いられますか？",
+    "clinical_domain": "TBAD risk stratification",
+    "implementation_status": "Registered — evidence review not started",
+    "synthesis_filename": null
+  }
+]
