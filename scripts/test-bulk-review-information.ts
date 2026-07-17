@@ -31,11 +31,12 @@ for(const invalid of [{...info,reviewer_name:" "},{...info,review_date:"2026-02-
 
 const review=JSON.parse(await readFile(new URL("../database/content_reviews/Q03_AES-GDL-001.json",import.meta.url),"utf8")) as ContentReview;
 const contentBefore=JSON.stringify({claims:review.extracted_claims,outcomes:review.outcome_data,reviewStatus:review.review_status});
+const decisionsBefore=Object.fromEntries(Object.entries(review.specialist_validation!.claims).map(([id,decision])=>[id,decision.status]));
 const appliedToReview=structuredClone(review);appliedToReview.specialist_validation=applyBulkReviewInformation(review.specialist_validation!,info,"all-pending").validation;
 assert.equal(JSON.stringify({claims:appliedToReview.extracted_claims,outcomes:appliedToReview.outcome_data,reviewStatus:appliedToReview.review_status}),contentBefore);
 assert.ok(appliedToReview.extracted_claims.every(claim=>!claim.verified_by_reviewer&&!claim.suitable_for_generated_answer));
 assert.ok(appliedToReview.outcome_data.every(outcome=>!outcome.verified_by_reviewer));
-assert.ok(Object.values(appliedToReview.specialist_validation!.claims).every(decision=>decision.status==="Pending"));
+assert.deepEqual(Object.fromEntries(Object.entries(appliedToReview.specialist_validation!.claims).map(([id,decision])=>[id,decision.status])),decisionsBefore);
 
 const component=await readFile(new URL("../components/bulk-review-information.tsx",import.meta.url),"utf8"),detail=await readFile(new URL("../components/review-detail-client.tsx",import.meta.url),"utf8");
 assert.match(component,/pending-without-reviewer/);assert.match(component,/all-pending/);assert.match(component,/all-items/);assert.match(component,/window\.confirm/);assert.match(component,/Save review/);
