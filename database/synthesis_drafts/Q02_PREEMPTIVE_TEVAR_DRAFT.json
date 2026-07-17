@@ -1,14 +1,20 @@
 {
   "synthesis_id": "Q02_PREEMPTIVE_TEVAR_DRAFT",
   "evaluation_question_number": 2,
-  "status": "Extraction draft — not specialist validated",
-  "last_updated": "2026-07-15",
+  "status": "Updated synthesis draft — pending specialist review",
+  "last_updated": "2026-07-17",
   "question": "What evidence supports preemptive TEVAR for uncomplicated acute or subacute type B aortic dissection?",
-  "scope_note": "Original-PDF extraction from AES-RCT-001, AES-RCT-002, and AES-RCT-003 only. This is not a clinical recommendation or generated answer.",
+  "scope_note": "Updated synthesis using only specialist-approved claims and outcomes from AES-RCT-001, AES-RCT-002, AES-RCT-003, AES-GDL-001, AES-GDL-002, AES-GDL-003, AES-GDL-004, AES-REG-001, and AES-OBS-001. AES-OBS-002 is excluded because its review remains Pending. This draft is not a clinical recommendation or an approved generated answer.",
   "source_ids": [
     "AES-RCT-001",
     "AES-RCT-002",
-    "AES-RCT-003"
+    "AES-RCT-003",
+    "AES-GDL-001",
+    "AES-GDL-002",
+    "AES-GDL-003",
+    "AES-GDL-004",
+    "AES-REG-001",
+    "AES-OBS-001"
   ],
   "identity_outcomes": [
     {
@@ -25,33 +31,166 @@
       "source_id": "AES-RCT-003",
       "outcome": "Matched",
       "warning": "The publisher PDF includes an appended trialist-name correction; the registered original article is present."
+    },
+    {
+      "source_id": "AES-GDL-001",
+      "outcome": "Matched",
+      "warning": null
+    },
+    {
+      "source_id": "AES-GDL-002",
+      "outcome": "Matched",
+      "warning": "The appended 2023 erratum corrects a reference number and does not change the identity of the 2022 guideline."
+    },
+    {
+      "source_id": "AES-GDL-003",
+      "outcome": "Matched",
+      "warning": null
+    },
+    {
+      "source_id": "AES-GDL-004",
+      "outcome": "Matched with metadata warning",
+      "warning": "The title identifies the 2020 guideline edition; the English-language journal article was published in 2023."
+    },
+    {
+      "source_id": "AES-REG-001",
+      "outcome": "Matched",
+      "warning": "PMID is registered in the catalog but is not printed in the supplied publisher PDF."
+    },
+    {
+      "source_id": "AES-OBS-001",
+      "outcome": "Matched",
+      "warning": "PMID is registered in the catalog but is not printed in the supplied publisher PDF. Internal numerical discrepancies are preserved in the source review."
     }
   ],
   "draft_findings": [
     {
-      "finding": "The two-year INSTEAD report did not demonstrate a significant survival or composite clinical-event advantage, although remodeling favored TEVAR.",
+      "finding": "Across the four guidelines, initial optimal or medical therapy with close surveillance remains the standard approach for uncomplicated acute TBAD; rupture, malperfusion, or other complicated presentations follow a separate urgent-intervention pathway and should not be conflated with preemptive treatment.",
       "claim_refs": [
-        "Q02-RCT001-C02",
-        "Q02-RCT001-C03",
-        "Q02-RCT001-C04"
+        "Q02-GDL001-C01",
+        "Q02-GDL001-C02",
+        "Q02-GDL002-C01",
+        "Q02-GDL002-C02",
+        "Q02-GDL002-C07",
+        "Q02-GDL003-C01",
+        "Q02-GDL003-C04",
+        "Q02-GDL004-C01",
+        "Q02-GDL004-C13"
       ]
     },
     {
-      "finding": "INSTEAD-XL reported lower five-year aorta-specific mortality and disease progression after TEVAR, while the overall all-cause mortality comparison was not significant and late landmark analyses have observational limitations.",
+      "finding": "The randomized evidence consistently supports improved aortic remodeling after TEVAR plus medical therapy. INSTEAD showed more complete thoracic false-lumen thrombosis and remodeling at two years without a significant two-year survival or composite clinical-event advantage, and it also documented early procedural and neurological harms.",
       "claim_refs": [
+        "Q02-RCT001-C01",
+        "Q02-RCT001-C02",
+        "Q02-RCT001-C03",
+        "Q02-RCT001-C04",
+        "Q02-RCT001-C05"
+      ]
+    },
+    {
+      "finding": "INSTEAD-XL, an extended follow-up of the same randomized cohort rather than a new randomization, reported lower five-year aorta-specific mortality and less disease progression after TEVAR assignment. Overall five-year all-cause mortality was not significantly different, and late landmark analyses remain observational and vulnerable to omitted early events, confounding, and reduced power.",
+      "claim_refs": [
+        "Q02-RCT002-C01",
         "Q02-RCT002-C02",
         "Q02-RCT002-C03",
         "Q02-RCT002-C04",
+        "Q02-RCT002-C05",
         "Q02-RCT002-C06"
       ]
     },
     {
-      "finding": "ADSORB reported improved one-year false-lumen thrombosis and remodeling measures in acute uncomplicated dissection but was not powered for mortality.",
+      "finding": "ADSORB provides randomized evidence in acute uncomplicated TBAD that TEVAR plus best medical treatment improves one-year false-lumen thrombosis and true-/false-lumen remodeling measures. It was not powered to determine mortality benefit, and no rupture occurred in either randomized group within one year; remodeling must not be treated as proof of survival benefit.",
       "claim_refs": [
+        "Q02-RCT003-C01",
         "Q02-RCT003-C02",
         "Q02-RCT003-C03",
         "Q02-RCT003-C04",
+        "Q02-RCT003-C05",
         "Q02-RCT003-C06"
+      ]
+    },
+    {
+      "finding": "Guidelines support selective rather than routine preemptive TEVAR. ACC/AHA states that endovascular management may be considered for uncomplicated acute TBAD with high-risk anatomic features; STS/AATS retains optimal medical therapy as standard and allows prophylactic TEVAR in stable, anatomically suitable high-risk patients; EACTS/STS recommends medical therapy and monitoring without high-risk features and says TEVAR should be considered in the subacute phase when high-risk features are present; the Japanese guideline gives a selective subacute-to-early-chronic recommendation for predicted false-lumen enlargement and a weaker acute-phase option, while explicitly rejecting TEVAR for every false-lumen-patent case.",
+      "claim_refs": [
+        "Q02-GDL001-C05",
+        "Q02-GDL001-C06",
+        "Q02-GDL001-C09",
+        "Q02-GDL002-C03",
+        "Q02-GDL002-C06",
+        "Q02-GDL002-C08",
+        "Q02-GDL002-C11",
+        "Q02-GDL003-C03",
+        "Q02-GDL003-C04",
+        "Q02-GDL003-C06",
+        "Q02-GDL004-C03",
+        "Q02-GDL004-C04",
+        "Q02-GDL004-C08",
+        "Q02-GDL004-C09"
+      ]
+    },
+    {
+      "finding": "The preferred timing remains uncertain and terminology is not uniform. Guidelines use different acute, subacute, chronic, high-risk, and uncomplicated definitions; they should not be forced into equivalence. The overall pattern favors careful selection during the acute-to-subacute window, with stronger support for subacute intervention in high-risk patients than for routine immediate TEVAR in all uncomplicated cases.",
+      "claim_refs": [
+        "Q02-GDL001-C09",
+        "Q02-GDL002-C05",
+        "Q02-GDL002-C12",
+        "Q02-GDL003-C05",
+        "Q02-GDL003-C07",
+        "Q02-GDL004-C06",
+        "Q02-GDL004-C07",
+        "Q02-GDL004-C11"
+      ]
+    },
+    {
+      "finding": "VIRTUE offers supportive but non-randomized timing and remodeling evidence. After TEVR, subacute dissections showed false-lumen regression similar to acute dissections and greater than chronic dissections, suggesting retained subacute aortic plasticity. Its phase cohorts had different indications, clinical comparisons were underpowered, reintervention was frequent, and the registry cannot determine which uncomplicated patients benefit causally from intervention.",
+      "claim_refs": [
+        "Q02-REG001-C01",
+        "Q02-REG001-C02",
+        "Q02-REG001-C03",
+        "Q02-REG001-C05",
+        "Q02-REG001-C06",
+        "Q02-REG001-C07",
+        "Q02-REG001-C08",
+        "Q02-REG001-C09",
+        "Q02-REG001-C10",
+        "Q02-REG001-C11"
+      ]
+    },
+    {
+      "finding": "AES-OBS-001 describes the natural history of initially medically managed acute uncomplicated TBAD. Early failure occurred in approximately one eighth of the cohort, aneurysmal degeneration was the most frequent later intervention indication, freedom from intervention remained about three quarters at six years, and intervention-free survival was 41% at six years. The latter composite includes all-cause death and intervention. Its apparent survival advantage among patients who eventually underwent intervention is non-causal because of retrospective treatment selection and survivor/immortal-time bias, and reliable anatomic predictors were unavailable.",
+      "claim_refs": [
+        "Q02-OBS001-C01",
+        "Q02-OBS001-C02",
+        "Q02-OBS001-C03",
+        "Q02-OBS001-C04",
+        "Q02-OBS001-C05",
+        "Q02-OBS001-C06",
+        "Q02-OBS001-C07",
+        "Q02-OBS001-C09",
+        "Q02-OBS001-C10",
+        "Q02-OBS001-C11"
+      ]
+    },
+    {
+      "finding": "Overall, the evidence supports aortic remodeling benefit from TEVAR and suggests possible later aorta-specific benefit in selected patients, but it does not support routine preemptive TEVAR for every uncomplicated acute TBAD. Patient selection should distinguish truly uncomplicated disease from complicated or evolving presentations, use guideline-specific high-risk clinical and imaging features, account for anatomy and procedural risk, and acknowledge that the optimal intervention timing and magnitude of all-cause survival benefit remain uncertain.",
+      "claim_refs": [
+        "Q02-RCT001-C02",
+        "Q02-RCT001-C04",
+        "Q02-RCT001-C05",
+        "Q02-RCT002-C02",
+        "Q02-RCT002-C03",
+        "Q02-RCT002-C06",
+        "Q02-RCT003-C04",
+        "Q02-RCT003-C06",
+        "Q02-GDL001-C05",
+        "Q02-GDL001-C09",
+        "Q02-GDL002-C11",
+        "Q02-GDL003-C03",
+        "Q02-GDL003-C04",
+        "Q02-GDL004-C09",
+        "Q02-REG001-C10",
+        "Q02-OBS001-C09"
       ]
     }
   ],
@@ -62,8 +201,8 @@
   },
   "synthesis_review": {
     "decision": "Approve synthesis",
-    "reviewer_name": "Dai Yamanouchi",
-    "review_date": "2026-07-15",
+    "reviewer_name": "DY",
+    "review_date": "2026-07-17",
     "confirmed": true,
     "reviewer_note": ""
   }
