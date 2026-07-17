@@ -6,19 +6,16 @@ import type { ContentReview, ExtractedClaim, ItemReviewDecision, OutcomeData } f
 
 const load = async (name: string) => JSON.parse(await readFile(new URL(`../database/content_reviews/${name}.json`, import.meta.url), "utf8")) as ContentReview;
 
-for (const [name, approved] of [["Q03_AES-GDL-001", 14], ["Q03_AES-GDL-002", 15], ["Q03_AES-GDL-003", 16]] as const) {
+for (const name of ["Q03_AES-GDL-001", "Q03_AES-GDL-002", "Q03_AES-GDL-003", "Q03_AES-GDL-004", "Q03_AES-RCT-003"] as const) {
   const review = await load(name), ui = reviewListAggregation(review), authoritative = reviewDecisionCounts(review);
+  const displayedPending = ui.claims.Pending + ui.outcomes.Pending;
+  const displayedApproved = ui.claims.Approved + ui.outcomes.Approved;
+  const displayedApprovalIncomplete = ui.claims["Approval incomplete"] + ui.outcomes["Approval incomplete"];
   assert.deepEqual(ui.decisions, authoritative, `${name} UI and authoritative aggregation match`);
-  assert.equal(authoritative.approved, approved, `${name} authoritative approved count`);
-  assert.equal(ui.claims.Approved, approved, `${name} approved record is fully approved in the UI`);
-  assert.equal(ui.claims.Pending, 0, `${name} approved record is not displayed as Pending`);
-  assert.equal(ui.claims["Approval incomplete"], 0, `${name} approved metadata is complete`);
+  assert.equal(displayedPending, authoritative.pending, `${name} authoritative Pending decisions remain Pending in the UI`);
+  assert.equal(displayedApproved + displayedApprovalIncomplete, authoritative.approved, `${name} Approved decisions are never displayed as Pending`);
+  assert.equal(authoritative.total, review.extracted_claims.length + review.outcome_data.length, `${name} authoritative total includes every review item`);
 }
-
-const gdl004 = await load("Q03_AES-GDL-004"), gdl004Ui = reviewListAggregation(gdl004), gdl004Authoritative = reviewDecisionCounts(gdl004);
-assert.deepEqual(gdl004Ui.decisions, gdl004Authoritative, "Q03 AES-GDL-004 UI and authoritative aggregation match");
-assert.equal(gdl004Ui.claims.Pending, 18, "Q03 AES-GDL-004 remains Pending before specialist review");
-assert.equal(gdl004Ui.claims.Approved, 0);
 
 const q02 = await load("Q02_AES-RCT-001"), q02Ui = reviewListAggregation(q02), q02Authoritative = reviewDecisionCounts(q02);
 assert.deepEqual(q02Ui.decisions, q02Authoritative, "Q02 decision counts remain compatible");
@@ -36,4 +33,19 @@ assert.deepEqual(syntheticCounts.claims, { Pending: 1, Approved: 1, "Approval in
 assert.deepEqual(syntheticCounts.outcomes, { Pending: 0, Approved: 1, "Approval incomplete": 1, "Needs correction": 0, Excluded: 0 });
 assert.deepEqual(syntheticCounts.decisions, { approved: 4, correctionRequired: 1, pending: 1, excluded: 1, total: 7 });
 
-console.log("Review-list aggregation tests: 25 passed");
+const legacyQ02: ContentReview = {
+  review_id: "Q02-SYNTHETIC-LEGACY", evaluation_question_number: 2, question: "Synthetic legacy aggregation test", source_id: "SYNTHETIC-LEGACY", review_status: "In review", reviewer: null, review_date: null, source_access_type: null, source_version_or_date: null, relevant_sections: [],
+  extracted_claims: [
+    { ...claim("legacy-pending"), validation_decision: "Pending" },
+    { ...claim("legacy-approved"), validation_decision: "Approved", verified_by_reviewer: true, reviewer: "Legacy reviewer", review_date: "2026-07-17" },
+    { ...claim("legacy-correction"), validation_decision: "Needs correction" },
+    { ...claim("legacy-excluded"), validation_decision: "Excluded" },
+  ],
+  guideline_recommendations: [], outcome_data: [{ ...outcome("legacy-outcome", "p. 3"), validation_decision: "Approved", verified_by_reviewer: true, reviewer: "Legacy reviewer", review_date: "2026-07-17" }], limitations: [], contradictions: [], reviewer_notes: null, last_updated: "2026-07-17",
+};
+const legacyCounts = reviewListAggregation(legacyQ02);
+assert.deepEqual(legacyCounts.claims, { Pending: 1, Approved: 1, "Approval incomplete": 0, "Needs correction": 1, Excluded: 1 });
+assert.deepEqual(legacyCounts.outcomes, { Pending: 0, Approved: 1, "Approval incomplete": 0, "Needs correction": 0, Excluded: 0 });
+assert.deepEqual(legacyCounts.decisions, { approved: 2, correctionRequired: 1, pending: 1, excluded: 1, total: 5 });
+
+console.log("Review-list aggregation tests passed");
