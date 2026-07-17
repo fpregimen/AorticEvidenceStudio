@@ -1,4 +1,4 @@
-import type{ExtractedClaim,OutcomeData,ValidationDecision}from"./content-review-model";
+import{decisionIsValid,outcomeReviewId,type ContentReview,type ExtractedClaim,type ItemReviewDecision,type OutcomeData,type ValidationDecision}from"./content-review-model.ts";
 export type ApprovalDisplayStatus="Pending"|"Approved"|"Approval incomplete"|"Needs correction"|"Excluded";
 export const validReviewDate=(v:unknown)=>typeof v==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&new Date(`${v}T00:00:00Z`).toISOString().slice(0,10)===v;
 const text=(v:unknown)=>typeof v==="string"&&Boolean(v.trim());
@@ -6,3 +6,11 @@ export function missingApprovalFields(item:ExtractedClaim|OutcomeData){const mis
 export function approvalStatus(item:ExtractedClaim|OutcomeData):ApprovalDisplayStatus{const decision=(item.validation_decision??"Pending")as ValidationDecision;if(decision==="Approved"&&missingApprovalFields(item).length)return"Approval incomplete";return decision}
 export const isFullyApproved=(item:ExtractedClaim|OutcomeData)=>approvalStatus(item)==="Approved";
 export function reviewHasIncompleteApprovals(review:{extracted_claims:ExtractedClaim[];outcome_data:OutcomeData[]}){return[...review.extracted_claims,...review.outcome_data].some(item=>approvalStatus(item)==="Approval incomplete")}
+
+export type ApprovalStatusCounts=Record<ApprovalDisplayStatus,number>;
+export interface ReviewListAggregation{claims:ApprovalStatusCounts;outcomes:ApprovalStatusCounts;decisions:{approved:number;correctionRequired:number;pending:number;excluded:number;total:number}}
+const emptyCounts=():ApprovalStatusCounts=>({Pending:0,Approved:0,"Approval incomplete":0,"Needs correction":0,Excluded:0});
+function mappedDecision(review:ContentReview,kind:"claim"|"outcome",index:number):ItemReviewDecision|undefined{if(kind==="claim")return review.specialist_validation?.claims[review.extracted_claims[index].claim_id];const outcome=review.outcome_data[index];return review.specialist_validation?.outcomes[outcomeReviewId(index)]??(outcome.outcome_id?review.specialist_validation?.outcomes[outcome.outcome_id]:undefined)}
+function mappedStatus(review:ContentReview,kind:"claim"|"outcome",index:number):ApprovalDisplayStatus{const item=kind==="claim"?review.extracted_claims[index]:review.outcome_data[index],decision=mappedDecision(review,kind,index);if(!decision)return approvalStatus(item);if(decision.status==="Approved"&&!decisionIsValid(decision,kind,item))return"Approval incomplete";return decision.status}
+export function reviewListAggregation(review:ContentReview):ReviewListAggregation{const claims=emptyCounts(),outcomes=emptyCounts(),decisions={approved:0,correctionRequired:0,pending:0,excluded:0,total:review.extracted_claims.length+review.outcome_data.length};for(const kind of["claim","outcome"]as const){const items=kind==="claim"?review.extracted_claims:review.outcome_data;for(const[index]of items.entries()){const display=mappedStatus(review,kind,index);(kind==="claim"?claims:outcomes)[display]++;const raw=mappedDecision(review,kind,index)?.status??items[index].validation_decision??"Pending";if(raw==="Approved")decisions.approved++;else if(raw==="Needs correction")decisions.correctionRequired++;else if(raw==="Excluded")decisions.excluded++;else decisions.pending++}}return{claims,outcomes,decisions}}
+export function reviewHasMappedIncompleteApprovals(review:ContentReview){const counts=reviewListAggregation(review);return counts.claims["Approval incomplete"]+counts.outcomes["Approval incomplete"]>0}
