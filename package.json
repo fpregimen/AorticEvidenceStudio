@@ -15,7 +15,7 @@
     "review:open": "node --experimental-strip-types scripts/review-open.ts",
     "review:finalize": "node --experimental-strip-types scripts/review-finalize.ts",
     "test:review-workflow": "node --experimental-strip-types scripts/test-review-workflow.ts",
-    "test:canonical": "node --experimental-strip-types scripts/test-canonical-evidence.ts && node --experimental-strip-types scripts/test-migration-review.ts && node --experimental-strip-types scripts/test-authoring-portal.ts && node --conditions=react-server --experimental-strip-types scripts/test-node-pdf-extraction.ts",
+    "test:canonical": "node --experimental-strip-types scripts/test-canonical-evidence.ts && node --experimental-strip-types scripts/test-migration-review.ts && node --experimental-strip-types scripts/test-authoring-portal.ts && node --experimental-strip-types scripts/test-authoring-range-selection.ts && node --conditions=react-server --experimental-strip-types scripts/test-node-pdf-extraction.ts",
     "report:canonical-candidates": "node --experimental-strip-types scripts/generate-q02-q03-canonical-candidates.ts"
   },
   "dependencies": {
@@ -29,11 +29,13 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "latest",
+    "@types/jsdom": "^28.0.3",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "eslint": "latest",
     "eslint-config-next": "latest",
+    "jsdom": "^29.1.1",
     "tailwindcss": "latest",
     "typescript": "latest"
   }

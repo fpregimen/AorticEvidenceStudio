@@ -4,11 +4,25 @@ export interface WorkspaceDraft{
 export interface AiCandidatePayload{candidates?:Array<Record<string,unknown>>;provider?:string;model?:string;error?:string;setupRequired?:boolean}
 export interface PageSelection{quotation:string;start:number;end:number}
 
-export function selectionFromTextarea(pageText:string,textareaValue:string,start:number,end:number):PageSelection|null{
-  if(textareaValue!==pageText||!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<=start||end>pageText.length)return null;
+export function selectionFromCharacterOffsets(pageText:string,start:number,end:number):PageSelection|null{
+  if(!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<=start||end>pageText.length)return null;
   const raw=pageText.slice(start,end),leading=raw.length-raw.trimStart().length,trailing=raw.length-raw.trimEnd().length,quotation=raw.trim();return quotation&&pageText.includes(quotation)?{quotation,start:start+leading,end:end-trailing}:null;
 }
-export function quotationFromTextareaSelection(pageText:string,textareaValue:string,start:number,end:number){return selectionFromTextarea(pageText,textareaValue,start,end)?.quotation??null}
+function boundaryOffset(container:HTMLElement,node:Node,offset:number){
+  const document=container.ownerDocument,showText=document.defaultView?.NodeFilter.SHOW_TEXT??4,walker=document.createTreeWalker(container,showText);let total=0,current=walker.nextNode();
+  while(current){
+    if(current===node)return total+Math.min(offset,current.textContent?.length??0);
+    if(node.nodeType===1&&node.contains(current)){const children=Array.from(node.childNodes),child=children.find(item=>item===current||item.contains?.(current));if(child&&children.indexOf(child)>=offset)return total}
+    total+=current.textContent?.length??0;current=walker.nextNode();
+  }
+  if(node===container&&offset===container.childNodes.length)return total;
+  return null;
+}
+export function selectionFromDomRange(container:HTMLElement,range:Range,pageText:string):PageSelection|null{
+  if(range.collapsed||!container.contains(range.startContainer)||!container.contains(range.endContainer)||container.textContent!==pageText)return null;
+  const start=boundaryOffset(container,range.startContainer,range.startOffset),end=boundaryOffset(container,range.endContainer,range.endOffset);
+  return start===null||end===null?null:selectionFromCharacterOffsets(pageText,start,end);
+}
 export function emptyPageDraft():WorkspaceDraft{return{exactQuotation:"",printedPage:"",sectionOrRecommendation:"",textAnchor:"",tableLocation:"",figureLocation:"",interpretation:"",limitation:"",authorityType:"primary_study_result",verificationStatus:"primary_source_not_yet_verified",authoringMethod:"manual",aiProvider:"",aiModel:""}}
 export function pageResponseIsCurrent(response:{sourceFileId:string;pdfPage:number},active:{sourceFileId:string;pdfPage:number},responseRequestId:number,currentRequestId:number){return responseRequestId===currentRequestId&&response.sourceFileId===active.sourceFileId&&response.pdfPage===active.pdfPage}
 export function aiDisabledReason(input:{aiConfigured:boolean;extractionStatus?:string;hasPage:boolean;hasQuotation:boolean}){
