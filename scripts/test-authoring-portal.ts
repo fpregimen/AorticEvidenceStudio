@@ -6,7 +6,14 @@ const prefixes={source:"SRC_",sourceVersion:"SRV_",sourceFile:"SFL_",evidence:"E
 for(const kind of Object.keys(prefixes)as Array<keyof typeof prefixes>)assert.doesNotThrow(()=>parseCanonicalId(newCanonicalId(kind),prefixes[kind]));
 const sql=await readFile("supabase/migrations/202607180001_minimum_authoring_portal.sql","utf8");
 assert.match(sql,/values\('aes-private-sources','aes-private-sources',false/);assert.match(sql,/enable row level security/g);assert.match(sql,/authenticated insert reviews/);assert.match(sql,/decision <> 'approved' or original_source_confirmed/);assert.match(sql,/predecessor_ref/);assert.match(sql,/Synthetic Polymer Durability Report/);assert.doesNotMatch(sql,/source_documents\/private/);
+const grantsSql=await readFile("supabase/migrations/202607180002_authenticated_authoring_grants.sql","utf8");
+assert.match(grantsSql,/grant usage on schema public to authenticated/);
+for(const table of ["authoring_sources","authoring_source_versions","authoring_source_files","authoring_evidence_revisions"])assert.match(grantsSql,new RegExp(`public\\.${table}`));
+assert.match(grantsSql,/grant select, insert, update on table/);
+for(const table of ["authoring_specialist_reviews","authoring_audit_events"])assert.match(grantsSql,new RegExp(`public\\.${table}`));
+assert.match(grantsSql,/grant select, insert on table/);
+assert.doesNotMatch(grantsSql,/create policy|drop policy|storage\.|service_role/i);
 const repository=await readFile("lib/authoring/repository.ts","utf8"),detail=await readFile("app/authoring/(portal)/sources/[sourceId]/page.tsx","utf8"),layout=await readFile("app/authoring/(portal)/layout.tsx","utf8");
 assert.match(repository,/original_source_confirmed/);assert.match(repository,/revision_number\+1/);assert.match(repository,/upsert:false/);assert.doesNotMatch(repository,/getPublicUrl/);assert.doesNotMatch(detail,/Approve All/);assert.match(layout,/requireAuthoringUser/);
 const login=await readFile("app/authoring/login/page.tsx","utf8");assert.match(login,/Setup required/);assert.match(login,/患者を特定できる情報/);
-console.log("Authoring Portal tests: 20 passed");
+console.log("Authoring Portal tests: 32 passed");
