@@ -1,0 +1,12 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { newCanonicalId } from "../lib/authoring/ids.ts";
+import { parseCanonicalId } from "../lib/canonical-evidence/identifiers.ts";
+const prefixes={source:"SRC_",sourceVersion:"SRV_",sourceFile:"SFL_",evidence:"EVI_",review:"REV_",location:"LOC_",reviewer:"RVR_",referenceChain:"RFC_"}as const;
+for(const kind of Object.keys(prefixes)as Array<keyof typeof prefixes>)assert.doesNotThrow(()=>parseCanonicalId(newCanonicalId(kind),prefixes[kind]));
+const sql=await readFile("supabase/migrations/202607180001_minimum_authoring_portal.sql","utf8");
+assert.match(sql,/values\('aes-private-sources','aes-private-sources',false/);assert.match(sql,/enable row level security/g);assert.match(sql,/authenticated insert reviews/);assert.match(sql,/decision <> 'approved' or original_source_confirmed/);assert.match(sql,/predecessor_ref/);assert.match(sql,/Synthetic Polymer Durability Report/);assert.doesNotMatch(sql,/source_documents\/private/);
+const repository=await readFile("lib/authoring/repository.ts","utf8"),detail=await readFile("app/authoring/(portal)/sources/[sourceId]/page.tsx","utf8"),layout=await readFile("app/authoring/(portal)/layout.tsx","utf8");
+assert.match(repository,/original_source_confirmed/);assert.match(repository,/revision_number\+1/);assert.match(repository,/upsert:false/);assert.doesNotMatch(repository,/getPublicUrl/);assert.doesNotMatch(detail,/Approve All/);assert.match(layout,/requireAuthoringUser/);
+const login=await readFile("app/authoring/login/page.tsx","utf8");assert.match(login,/Setup required/);assert.match(login,/患者を特定できる情報/);
+console.log("Authoring Portal tests: 20 passed");

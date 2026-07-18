@@ -1,0 +1,1 @@
+export function authoringSetup() { const url=process.env.NEXT_PUBLIC_SUPABASE_URL?.trim(),anonKey=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim(); return {configured:Boolean(url&&anonKey),url:url??"",anonKey:anonKey??"",bucket:process.env.SUPABASE_PRIVATE_BUCKET?.trim()||"aes-private-sources"}; }

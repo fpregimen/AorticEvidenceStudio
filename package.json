@@ -3,7 +3,35 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "scripts": { "dev": "next dev", "build": "next build", "start": "next start", "lint": "eslint .", "validate:sources": "node --experimental-strip-types scripts/validate-sources.ts", "validate:reviews": "node --experimental-strip-types scripts/validate-reviews.ts && node --experimental-strip-types scripts/test-synthesis-validation.ts && node --experimental-strip-types scripts/test-review-source-validation.ts && node --experimental-strip-types scripts/test-review-workflow.ts && node --experimental-strip-types scripts/test-question-registry.ts && node --experimental-strip-types scripts/test-bulk-review-information.ts && node --experimental-strip-types scripts/test-review-list-aggregation.ts", "review:status": "node --experimental-strip-types scripts/review-status.ts", "review:open": "node --experimental-strip-types scripts/review-open.ts", "review:finalize": "node --experimental-strip-types scripts/review-finalize.ts", "test:review-workflow": "node --experimental-strip-types scripts/test-review-workflow.ts", "test:canonical": "node --experimental-strip-types scripts/test-canonical-evidence.ts && node --experimental-strip-types scripts/test-migration-review.ts", "report:canonical-candidates": "node --experimental-strip-types scripts/generate-q02-q03-canonical-candidates.ts" },
-  "dependencies": { "next": "latest", "react": "latest", "react-dom": "latest" },
-  "devDependencies": { "@tailwindcss/postcss": "latest", "@types/node": "latest", "@types/react": "latest", "@types/react-dom": "latest", "eslint": "latest", "eslint-config-next": "latest", "tailwindcss": "latest", "typescript": "latest" }
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "validate:sources": "node --experimental-strip-types scripts/validate-sources.ts",
+    "validate:reviews": "node --experimental-strip-types scripts/validate-reviews.ts && node --experimental-strip-types scripts/test-synthesis-validation.ts && node --experimental-strip-types scripts/test-review-source-validation.ts && node --experimental-strip-types scripts/test-review-workflow.ts && node --experimental-strip-types scripts/test-question-registry.ts && node --experimental-strip-types scripts/test-bulk-review-information.ts && node --experimental-strip-types scripts/test-review-list-aggregation.ts",
+    "review:status": "node --experimental-strip-types scripts/review-status.ts",
+    "review:open": "node --experimental-strip-types scripts/review-open.ts",
+    "review:finalize": "node --experimental-strip-types scripts/review-finalize.ts",
+    "test:review-workflow": "node --experimental-strip-types scripts/test-review-workflow.ts",
+    "test:canonical": "node --experimental-strip-types scripts/test-canonical-evidence.ts && node --experimental-strip-types scripts/test-migration-review.ts && node --experimental-strip-types scripts/test-authoring-portal.ts",
+    "report:canonical-candidates": "node --experimental-strip-types scripts/generate-q02-q03-canonical-candidates.ts"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.110.7",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "tailwindcss": "latest",
+    "typescript": "latest"
+  }
 }
