@@ -2,11 +2,15 @@ export interface WorkspaceDraft{
   exactQuotation:string;printedPage:string;sectionOrRecommendation:string;textAnchor:string;tableLocation:string;figureLocation:string;interpretation:string;limitation:string;authorityType:string;verificationStatus:string;authoringMethod:"manual"|"ai_suggested";aiProvider:string;aiModel:string
 }
 export interface AiCandidatePayload{candidates?:Array<Record<string,unknown>>;provider?:string;model?:string;error?:string;setupRequired?:boolean}
+export interface PageSelection{quotation:string;start:number;end:number}
 
-export function quotationFromTextareaSelection(pageText:string,textareaValue:string,start:number,end:number){
+export function selectionFromTextarea(pageText:string,textareaValue:string,start:number,end:number):PageSelection|null{
   if(textareaValue!==pageText||!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<=start||end>pageText.length)return null;
-  const exact=pageText.slice(start,end).trim();return exact&&pageText.includes(exact)?exact:null;
+  const raw=pageText.slice(start,end),leading=raw.length-raw.trimStart().length,trailing=raw.length-raw.trimEnd().length,quotation=raw.trim();return quotation&&pageText.includes(quotation)?{quotation,start:start+leading,end:end-trailing}:null;
 }
+export function quotationFromTextareaSelection(pageText:string,textareaValue:string,start:number,end:number){return selectionFromTextarea(pageText,textareaValue,start,end)?.quotation??null}
+export function emptyPageDraft():WorkspaceDraft{return{exactQuotation:"",printedPage:"",sectionOrRecommendation:"",textAnchor:"",tableLocation:"",figureLocation:"",interpretation:"",limitation:"",authorityType:"primary_study_result",verificationStatus:"primary_source_not_yet_verified",authoringMethod:"manual",aiProvider:"",aiModel:""}}
+export function pageResponseIsCurrent(response:{sourceFileId:string;pdfPage:number},active:{sourceFileId:string;pdfPage:number},responseRequestId:number,currentRequestId:number){return responseRequestId===currentRequestId&&response.sourceFileId===active.sourceFileId&&response.pdfPage===active.pdfPage}
 export function aiDisabledReason(input:{aiConfigured:boolean;extractionStatus?:string;hasPage:boolean;hasQuotation:boolean}){
   if(input.extractionStatus!=="complete")return"Extraction is incomplete / 抽出が完了していません";
   if(!input.hasPage)return"No extracted page selected / 抽出ページが選択されていません";
