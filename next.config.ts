@@ -1,3 +1,8 @@
 import type { NextConfig } from "next";
-const nextConfig: NextConfig = {serverExternalPackages:["@napi-rs/canvas"]};
+const nextConfig: NextConfig = {
+  serverExternalPackages:["@napi-rs/canvas","pdfjs-dist"],
+  outputFileTracingIncludes:{
+    "/api/authoring/source-files/[sourceFileId]/extract":["./node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs"],
+  },
+};
 export default nextConfig;
