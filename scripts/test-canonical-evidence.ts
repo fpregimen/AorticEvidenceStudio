@@ -64,8 +64,8 @@ function syntheticLegacy(question: string, wording: string, supportingText: stri
   return adaptLegacyReviewReadOnly(question, review);
 }
 const exactReport = generateDuplicateCandidateReport(syntheticLegacy("Q02", "Synthetic material retained strength", "Exact synthetic support", "Approved"), syntheticLegacy("Q03", "Synthetic material retained strength", "Exact synthetic support", "Pending"));
-assert.equal(exactReport.mergePerformed, false); assert.equal(exactReport.candidates[0].merged, false); assert.equal(exactReport.candidates[0].requiresManualResolution, true); assert(exactReport.candidates[0].differences.some(diff => diff.field === "status")); assert.match(duplicateReportToMarkdown(exactReport), /No merge/);
+assert.equal(exactReport.mergePerformed, false); assert.equal(exactReport.candidates[0].merged, false); assert.equal(exactReport.candidates[0].requiresManualResolution, true); assert(exactReport.candidates[0].differences.some(diff => diff.field === "decision")); assert.match(duplicateReportToMarkdown(exactReport), /No merge/);
 const conflictReport = generateDuplicateCandidateReport(syntheticLegacy("Q02", "Synthetic material increased", "Support A", "Approved"), syntheticLegacy("Q03", "Synthetic material decreased", "Support B", "Pending"));
-assert(conflictReport.candidates.some(candidate => candidate.classification === "conflict" && candidate.requiresManualResolution));
+assert(conflictReport.candidates.some(candidate => candidate.classification === "conflicting" && candidate.requiresManualResolution));
 
 console.log("Canonical evidence Phase 1 tests: 24 passed");
