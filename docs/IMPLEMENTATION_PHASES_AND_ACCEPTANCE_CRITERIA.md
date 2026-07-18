@@ -72,18 +72,27 @@ Code, schema deployment, migration, cloud, keys, AI, production vendor selection
 
 ## Phase 1: Canonical schema and compatibility layer
 
+ADR-006 resolves the former Phase 1 blockers for authority/verification/review separation, independent lifecycle state machines, UUIDv7-compatible opaque typed IDs and revision notation, the Evidence Item/revision boundary, and correction/erratum/source-version modeling. Phase 1 is therefore unblocked within the boundary below.
+
 ### Deliverables
 
 - Versioned canonical schemas and controlled vocabularies.
-- Stable ID and hash/canonicalization libraries.
+- Stable typed ID and revision abstractions using UUIDv7-compatible contracts without permanent library coupling; real Q02/Q03 records receive no new IDs.
+- Independent authority/type, specialist decision, verification, source, evidence-review, publication, dispute, and Pack state types.
+- Hash/canonicalization abstractions and synthetic vectors; the final production profile remains a deferred decision.
 - Immutable revision/review/audit contracts.
 - Legacy read-only inventory and mapping interfaces.
 - Compatibility projection from canonical synthetic fixtures to current `ContentReview`/Results expectations.
 - Schema and invariant validators.
+- Read-only duplicate-candidate reporting with no merge or mutation operation.
 
 ### Acceptance criteria
 
 - Synthetic evidence can be reused across multiple questions without copied decisions.
+- Approval is bound to one exact immutable Evidence Revision and cannot transfer to a correction or successor revision.
+- Material changes in medical meaning, population, intervention, comparator, outcome, threshold, or distinct result require a new Evidence Item.
+- Source, Source Version, Source File, erratum/corrigendum link, and correction-impact rules validate independently.
+- Independent state dimensions cannot be serialized or accepted as one generic `Validated` state.
 - Page-only provenance fails; table/figure/chain/review rules pass/fail correctly.
 - Compatibility projection reproduces current shapes without touching Q02/Q03 files.
 - No private path field exists in canonical/public schemas.
@@ -107,7 +116,7 @@ Disable compatibility feature; no legacy data changed.
 
 ### Out of scope
 
-Real migration, cloud persistence, Portal UI, Pack publication, AI.
+Real medical-data migration, canonical ID assignment to real records, specialist-decision changes, cloud persistence, Portal UI, Pack signing/publication, commercial free-form synthesis, and AI.
 
 ## Phase 2: Controlled Q02/Q03 migration
 

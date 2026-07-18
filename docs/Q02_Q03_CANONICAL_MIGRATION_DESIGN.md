@@ -8,6 +8,21 @@ The migration must preserve all current evidence text, source locations, numeric
 
 Q02 and Q03 remain example and regression questions. Their source-level evidence becomes canonical and reusable; question-specific interpretation and synthesis remain separate.
 
+## Approved Phase 1 identity and revision rules
+
+ADR-006 establishes the following constraints for compatibility and any later migration:
+
+- Canonical IDs are opaque, immutable, typed (`SRC_`, `SRV_`, `SFL_`, `EVI_`, `REV_`, `LOC_`, `RFC_`, and `RVR_`) and use a UUIDv7-compatible domain abstraction without permanent library coupling.
+- Evidence revision display is `EVI_<id>@r<positive integer>`.
+- Existing `AES-*`, Q02/Q03, and question-owned identifiers remain immutable aliases and provenance references; none is silently replaced.
+- Authority/type, specialist review decision, and source/reference verification status remain independent.
+- Source, evidence review, publication, dispute, and Evidence Pack lifecycles remain independent.
+- A correction creates a new immutable Evidence Revision. Approval applies only to the exact revision reviewed and never transfers automatically.
+- A new Evidence Item is required when medical meaning, population, intervention, comparator, outcome, threshold, or distinct result materially changes.
+- Source, Source Version, and Source File remain separate. Errata/corrigenda link explicitly to affected sources/versions; affected evidence requires a new revision and re-review.
+
+Phase 1 only reads Q02/Q03 for compatibility. It does not assign these identifiers to real records or perform any migration.
+
 ## Current-state observations
 
 - Sources are registered in `database/source_catalog.csv` using human-readable `AES-*` IDs.
@@ -76,7 +91,7 @@ Evidence from Q02 and Q03 is a candidate for one canonical evidence item only wh
 - structured population, intervention/exposure, comparator, outcome, and time;
 - numerical value, units, denominator, uncertainty, and analysis set;
 - claim meaning and limitations;
-- authority classification;
+- evidence authority/type and verification status;
 - source-file hash or verified rendition relationship.
 
 ### Candidate classes
@@ -98,13 +113,15 @@ The migration report must show field-level differences for:
 - printed page, PDF page, section, recommendation, table, figure, or note;
 - population, phase, intervention, comparator, endpoint, time point, denominator, units, estimate, or uncertainty;
 - direct/indirect classification;
-- evidence-authority classification;
+- evidence authority/type and source/reference verification status;
 - limitation, ambiguity, contradiction, or inference language;
 - reviewer identity, date, comments, original-source confirmation, and inspection scope;
 - embedded versus mapped decision source;
 - Pending, Approved, Needs correction, Excluded, incomplete approval, disputed, or retired status;
 - `suitable_for_generated_answer` and synthesis-use history;
 - translation or source-language treatment.
+
+Legacy representations such as `Disputed` or `Retired` must be projected into the approved independent dispute or publication lifecycle, never into the four-value specialist review decision vocabulary.
 
 Differences must not be resolved by choosing the latest file, most permissive status, longest text, or Approved state automatically.
 
@@ -262,7 +279,7 @@ Synthetic, non-medical example:
   ],
   "candidate_class": "exact_candidate",
   "manual_resolution": "confirmed_same_evidence",
-  "canonical_revision_id": "EVI-01J00000000000000000000004@r1",
+  "canonical_revision_id": "EVI_<synthetic-id>@r1",
   "question_links": ["Q02@v1", "Q03@v1"],
   "approval_created_by_migration": false
 }

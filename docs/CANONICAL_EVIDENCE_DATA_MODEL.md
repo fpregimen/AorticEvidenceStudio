@@ -9,9 +9,9 @@ The model separates stable identity from revision content. Questions refer to ca
 ## Design invariants
 
 1. One `source` represents one intellectual work or official document identity.
-2. Every edition, correction, report, publication version, IFU revision, or regulatory revision is a `source_version`.
-3. One `evidence_item` represents one distinct claim, recommendation, numerical result, table-derived result, figure-derived result, or definition.
-4. Corrections create `evidence_revisions` without changing the stable evidence ID.
+2. Every edition, report, publication version, corrected publication, guideline revision, IFU revision, or regulatory revision is a `source_version`. Errata and corrigenda are explicitly linked to the affected source or source version.
+3. One `evidence_item` represents one distinct medical evidence concept. A material change in medical meaning, population, intervention, comparator, outcome, threshold, or distinct result requires a new evidence item.
+4. A correction to wording, interpretation, location, quotation, table/figure provenance, numerical value, applicability, limitation, hash, review metadata, or verification state creates an immutable `evidence_revision` without changing the stable evidence ID.
 5. Published revisions are immutable. Supersession, dispute, and retirement are explicit relationships, never destructive updates.
 6. A page number alone is never sufficient provenance.
 7. Specialist decisions apply to a specific evidence revision and cannot be inherited silently by another revision or question.
@@ -19,29 +19,54 @@ The model separates stable identity from revision content. Questions refer to ca
 9. Audit history is append-only.
 10. Private source-file storage references never cross the publication boundary.
 
-## Identifier structure
+## Approved identifier structure
 
 Identifiers are opaque, stable, ASCII, case-normalized, and independent of filenames, titles, vendors, locations, reviewers, and mutable classifications.
 
 | Entity | Proposed format | Example |
 |---|---|---|
-| Source | `SRC-<26-char sortable random ID>` | `SRC-01J00000000000000000000001` |
-| Source version | `SRV-<26-char sortable random ID>` | `SRV-01J00000000000000000000002` |
-| Source file | `SFL-<26-char sortable random ID>` | `SFL-01J00000000000000000000003` |
-| Evidence item | `EVI-<26-char sortable random ID>` | `EVI-01J00000000000000000000004` |
-| Evidence revision | `<evidence_id>@r<positive integer>` | `EVI-01J00000000000000000000004@r1` |
-| Evidence location | `LOC-<26-char sortable random ID>` | `LOC-01J00000000000000000000005` |
-| Specialist review | `REV-<26-char sortable random ID>` | `REV-01J00000000000000000000006` |
-| Reference chain | `RFC-<26-char sortable random ID>` | `RFC-01J00000000000000000000007` |
-| Reference verification | `RFV-<26-char sortable random ID>` | `RFV-01J00000000000000000000008` |
+| Source | `SRC_<opaque UUIDv7-compatible value>` | `SRC_<synthetic-id>` |
+| Source version | `SRV_<opaque UUIDv7-compatible value>` | `SRV_<synthetic-id>` |
+| Source file | `SFL_<opaque UUIDv7-compatible value>` | `SFL_<synthetic-id>` |
+| Evidence item | `EVI_<opaque UUIDv7-compatible value>` | `EVI_<synthetic-id>` |
+| Evidence revision | `<evidence_id>@r<positive integer>` | `EVI_<synthetic-id>@r1` |
+| Evidence location | `LOC_<opaque UUIDv7-compatible value>` | `LOC_<synthetic-id>` |
+| Specialist review | `REV_<opaque UUIDv7-compatible value>` | `REV_<synthetic-id>` |
+| Reference chain | `RFC_<opaque UUIDv7-compatible value>` | `RFC_<synthetic-id>` |
+| Reference verification | Typed opaque ID under the canonical registry | Synthetic only in Phase 1 |
+| Reviewer | `RVR_<opaque UUIDv7-compatible value>` | `RVR_<synthetic-id>` |
 | Question | Existing public form or opaque ID | `Q03` |
 | Question version | `<question_id>@v<positive integer>` | `Q03@v1` |
 | Synthesis | `SYN-<question-version>-<positive integer>` | `SYN-Q03-v1-1` |
 | Audit event | `AUD-<26-char sortable random ID>` | `AUD-01J00000000000000000000009` |
 
-The 26-character component denotes a ULID-like sortable random identifier as a logical requirement, not a mandated library. Systems may use UUIDv7 or another collision-resistant equivalent if one representation is selected and documented before implementation.
+The domain model uses an implementation-ready UUIDv7-compatible abstraction without permanent coupling to one identifier library. Prefix, payload parsing, generation, and serialization are centralized. The examples are deliberately synthetic and are not real assigned IDs.
 
 Existing IDs such as `AES-RCT-003` remain aliases for migration and human navigation. They are not the canonical primary key because they encode a mutable local classification.
+
+Existing `AES-*`, Q02/Q03, and question-owned identifiers remain immutable legacy aliases and provenance references. Phase 1 does not replace them or assign canonical IDs to real records.
+
+## Approved independent classifications and lifecycles
+
+Evidence authority/type, specialist review decision, and source/reference verification status are independent controlled vocabularies:
+
+- **Authority/type:** guideline recommendation, primary study result, systematic review synthesis, regulatory statement, IFU requirement, or expert interpretation.
+- **Review decision:** Pending, Approved, Needs correction, or Excluded.
+- **Verification:** original source verified, underlying primary evidence verified, secondary citation only, primary source not yet verified, unable to verify, citation mismatch, or conflicting interpretation.
+
+No field named or displayed as generic `Validated` may substitute for these dimensions.
+
+The canonical state machines are also independent:
+
+| State machine | States |
+|---|---|
+| Source lifecycle | Active; Superseded; Withdrawn |
+| Evidence review lifecycle | Draft; Pending; Needs correction; Approved; Excluded |
+| Publication lifecycle | Unpublished; Release candidate; Published; Superseded; Retired |
+| Dispute lifecycle | None; Open; Resolved |
+| Evidence Pack lifecycle | Draft; Validated; Signed; Published; Revoked |
+
+Publication eligibility is computed from the independent dimensions and policy version. It is not itself a lifecycle state.
 
 ## Canonical entity relationships
 
@@ -79,7 +104,7 @@ Publication eligibility is computed from immutable evidence content, locations, 
 ### `sources`
 
 - **Purpose:** Canonical identity of an original paper, guideline, IFU, regulatory document, trial report, or official source.
-- **Stable identifier:** `source_id` (`SRC-*`).
+- **Stable identifier:** `source_id` (`SRC_*`).
 - **Required fields:** source type; normalized title; authoritative title; responsible author/group/issuer; identity status; created audit reference.
 - **Optional fields:** DOI, PMID, official identifier, official URL, journal/publisher, trial registration, jurisdiction, legacy aliases.
 - **Relationships:** One-to-many source versions; may be resolved targets of reference chains.
@@ -89,19 +114,19 @@ Publication eligibility is computed from immutable evidence content, locations, 
 
 ### `source_versions`
 
-- **Purpose:** Exact edition, publication version, correction, supplement, IFU revision, regulatory version, or trial report.
-- **Stable identifier:** `source_version_id` (`SRV-*`).
+- **Purpose:** Exact edition, publication version, corrected publication, supplement, IFU revision, regulatory version, or trial report.
+- **Stable identifier:** `source_version_id` (`SRV_*`).
 - **Required fields:** source ID; version type; edition/version label; publication status; publication year/date when verified; authoritative language; identity-verification state.
 - **Optional fields:** volume, issue, pages/article number, erratum relationship, superseded version, verification warning, effective jurisdiction/date.
 - **Relationships:** Belongs to source; has files and evidence items; participates in citation chains.
-- **Version behavior:** A materially different publisher version or official correction is a new source version.
+- **Version behavior:** An edition, publication version, corrected version, or guideline revision is a new source version. Errata and corrigenda are explicitly linked to the affected source or source version.
 - **Immutability:** Published version identity and relationships are append-only.
 - **Publication eligibility:** Exact version must be verified; warnings may be allowed only by explicit policy.
 
 ### `source_files`
 
 - **Purpose:** Restricted metadata for a reviewed file rendition.
-- **Stable identifier:** `source_file_id` (`SFL-*`).
+- **Stable identifier:** `source_file_id` (`SFL_*`).
 - **Required fields:** source-version ID; content hash; hash algorithm; byte length; MIME type; acquisition class; access classification; ingestion timestamp.
 - **Optional fields:** lawful-access record, acquisition URL, OCR/text-layer status, page count, renderer profile, storage adapter reference.
 - **Relationships:** Belongs to one source version; locations identify the reviewed file.
@@ -112,11 +137,11 @@ Publication eligibility is computed from immutable evidence content, locations, 
 ### `evidence_items`
 
 - **Purpose:** Stable identity for one distinct claim, recommendation, numerical result, table-derived result, figure-derived result, or definition.
-- **Stable identifier:** `evidence_id` (`EVI-*`).
-- **Required fields:** source-version ID; evidence kind; creation reason; lifecycle state.
+- **Stable identifier:** `evidence_id` (`EVI_*`).
+- **Required fields:** source-version ID; evidence authority/type; creation reason.
 - **Optional fields:** semantic fingerprint, legacy claim/outcome aliases, domain tags.
 - **Relationships:** Has ordered evidence revisions; may have related/supersedes/disputed/retired relationships to other items.
-- **Version behavior:** Wording or location correction creates a revision. A materially different proposition or result creates another evidence item.
+- **Version behavior:** A correction creates a revision. A material change in medical meaning, population, intervention, comparator, outcome, threshold, or distinct result creates another evidence item.
 - **Immutability:** Stable ID, source-version parent, and creation event are immutable.
 - **Publication eligibility:** At least one approved, current, publication-eligible revision is required.
 
@@ -124,17 +149,17 @@ Publication eligibility is computed from immutable evidence content, locations, 
 
 - **Purpose:** Immutable content and meaning of an evidence item at a point in time.
 - **Stable identifier:** evidence ID plus revision number.
-- **Required fields:** evidence ID; revision number; authority classification; source-language assertion; exact supporting quotation; supporting-text hash; location IDs; provenance status; change reason; predecessor when revision >1.
-- **Optional fields:** structured population/intervention/comparator/outcome/time; recommendation class/level; limitations; uncertainty; conflict note; semantic normalization.
+- **Required fields:** evidence ID; revision number; evidence authority/type; source/reference verification status; source-language assertion; exact supporting quotation; supporting-text hash; location IDs; provenance status; change reason; predecessor when revision >1; exact bound specialist review decision and reviewer-metadata record references when reviewed.
+- **Optional fields:** immutable interpretation; structured population/intervention/comparator/outcome/time; threshold; recommendation class/level; limitations; applicability; uncertainty; conflict note; table/figure/numerical structures; semantic normalization.
 - **Relationships:** Belongs to evidence item; links to locations, specialist reviews, translations, reference chains, questions, and syntheses.
 - **Version behavior:** Revision numbers are monotonically increasing with no reuse or gaps silently filled.
 - **Immutability:** A saved revision cannot be overwritten. Correction creates the next revision.
-- **Publication eligibility:** Current revision must satisfy the Expert-Validated Evidence Standard and have required approval; disputed, retired, mismatch, or unverified classifications are ineligible unless a narrowly defined Pack policy says otherwise.
+- **Publication eligibility:** Current revision must satisfy the Expert-Validated Evidence Standard and have required approval. Review decision, verification status, dispute lifecycle, publication lifecycle, and authority/type remain separate inputs. Deferred Pack policy governs any secondary-only or disputed content.
 
 ### `evidence_locations`
 
 - **Purpose:** Precise, relocatable original-source provenance.
-- **Stable identifier:** `location_id` (`LOC-*`).
+- **Stable identifier:** `location_id` (`LOC_*`).
 - **Required fields:** source-file ID; location type; printed/PDF page when available; at least one stable structural or text anchor beyond page; anchor normalization version.
 - **Optional fields:** chapter, section, subsection, recommendation number, paragraph index, quoted prefix/suffix, bounding box, supplement/appendix, table/figure coordinates.
 - **Relationships:** Supports one or more evidence revisions; references a specific source file.
@@ -189,7 +214,7 @@ Publication eligibility is computed from immutable evidence content, locations, 
 ### `specialist_reviews`
 
 - **Purpose:** Explicit human decision on an exact evidence revision.
-- **Stable identifier:** `review_id` (`REV-*`).
+- **Stable identifier:** `review_id` (`REV_*`).
 - **Required fields:** evidence revision; reviewer profile; role at review; specialty snapshot; decision; review timestamp; original-source confirmation; inspected-material flags; comments field; authenticated audit event.
 - **Optional fields:** correction instructions, conflict-of-interest disclosure, second-review group, adjudication link.
 - **Relationships:** Belongs to reviewer and evidence revision; may supersede an earlier review only by a new event.
@@ -200,7 +225,7 @@ Publication eligibility is computed from immutable evidence content, locations, 
 ### `reviewer_profiles`
 
 - **Purpose:** Governed reviewer identity and qualifications.
-- **Stable identifier:** `reviewer_id` (`RVR-*`).
+- **Stable identifier:** `reviewer_id` (`RVR_*`).
 - **Required fields:** authenticated subject mapping; display identity; active status; specialty; role eligibility.
 - **Optional fields:** credentials, jurisdiction, organization, language proficiency, conflict disclosures.
 - **Relationships:** Performs specialist reviews and audit events.
@@ -211,18 +236,18 @@ Publication eligibility is computed from immutable evidence content, locations, 
 ### `reference_chains`
 
 - **Purpose:** Stable chain or edge describing a citation from a source/evidence assertion toward another source or evidence item.
-- **Stable identifier:** `reference_chain_id` (`RFC-*`).
+- **Stable identifier:** `reference_chain_id` (`RFC_*`).
 - **Required fields:** citing source version or evidence revision; citation text as printed; direct/indirect type; target resolution status.
 - **Optional fields:** cited source/version/evidence target; bibliography number; inherited claim; parent chain; notes.
 - **Relationships:** Connects source versions/evidence revisions; has verification events.
 - **Version behavior:** Newly resolved targets or changed inherited claims create a new chain revision or verification, not destructive edits.
 - **Immutability:** Printed citation and originating revision remain immutable.
-- **Publication eligibility:** Depends on authority classification and latest verification policy.
+- **Publication eligibility:** Depends on evidence authority/type and latest verification policy.
 
 ### `reference_verifications`
 
 - **Purpose:** Human verification of whether a citation target supports the inherited claim.
-- **Stable identifier:** `reference_verification_id` (`RFV-*`).
+- **Stable identifier:** typed opaque reference-verification ID defined by the canonical registry.
 - **Required fields:** chain ID; reviewer; date; retrieval status; support status; citation-match status; original-source inspection flags; comments.
 - **Optional fields:** target source/version/evidence, mismatch category, retrieval attempts, adjudication.
 - **Relationships:** Belongs to chain and reviewer; may point to verified evidence revision.
@@ -283,25 +308,7 @@ Evidence-item relationships are typed and effective-dated:
 - `retired`: no longer eligible for new publication, with reason; retirement does not delete history.
 - `related`: non-authoritative relationship requiring a subtype and rationale.
 
-```mermaid
-stateDiagram-v2
-    [*] --> DraftRevision
-    DraftRevision --> InReview
-    InReview --> CorrectionRequired
-    CorrectionRequired --> NewRevision
-    NewRevision --> InReview
-    InReview --> Approved
-    InReview --> Excluded
-    Approved --> PackEligible
-    PackEligible --> Published
-    Approved --> Disputed: later challenge
-    Published --> Superseded: corrected or newer revision
-    Published --> Retired: withdrawn or unsafe
-    Disputed --> NewRevision: resolved by correction
-    Superseded --> [*]
-    Retired --> [*]
-    Excluded --> [*]
-```
+The evidence review, dispute, publication, source, and Evidence Pack lifecycle transitions are validated independently under ADR-006. A transition in one state machine never silently changes another.
 
 ## Hashing model
 
@@ -317,7 +324,8 @@ stateDiagram-v2
 
 - Any byte change creates a new `source_file` and file hash.
 - If bibliographic identity and evidence text are unchanged, retain the source version, create new locations bound to the new file, and require relocation verification before publication from that rendition.
-- If an official correction changes source content, create a source version and new evidence revisions as applicable.
+- If an official corrected publication changes source content, create a source version and new evidence revisions as applicable. Link an erratum or corrigendum explicitly to the affected source/source version.
+- When a correction affects an evidence revision, record its impact, create a new evidence revision, require specialist re-review and new approval, and publish it only through a later Evidence Pack. Preserve the previous revision and approval history.
 - If identity is uncertain, quarantine the file; do not attach it silently to the existing version.
 
 ### Corrected OCR or extraction
@@ -337,33 +345,34 @@ The examples below are non-medical placeholders and are not valid evidence.
 ```json
 {
   "source": {
-    "source_id": "SRC-01J00000000000000000000001",
+    "source_id": "SRC_<synthetic-id>",
     "source_type": "journal_article",
     "authoritative_title": "Synthetic Material Durability Study",
     "doi": "10.0000/example.synthetic.001",
     "identity_status": "verified"
   },
   "source_version": {
-    "source_version_id": "SRV-01J00000000000000000000002",
-    "source_id": "SRC-01J00000000000000000000001",
+    "source_version_id": "SRV_<synthetic-id>",
+    "source_id": "SRC_<synthetic-id>",
     "version_type": "version_of_record",
     "publication_year": 2099,
     "authoritative_language": "en"
   },
   "evidence_item": {
-    "evidence_id": "EVI-01J00000000000000000000004",
-    "source_version_id": "SRV-01J00000000000000000000002",
+    "evidence_id": "EVI_<synthetic-id>",
+    "source_version_id": "SRV_<synthetic-id>",
     "evidence_kind": "numerical_result"
   },
   "evidence_revision": {
-    "revision_id": "EVI-01J00000000000000000000004@r1",
-    "authority_classification": "primary_evidence_directly_verified",
+    "revision_id": "EVI_<synthetic-id>@r1",
+    "evidence_authority_type": "primary_study_result",
+    "verification_status": "original_source_verified",
     "exact_supporting_quotation": "Synthetic specimens retained 90 units at day 30.",
     "supporting_text_hash": "sha256:synthetic-placeholder-not-a-real-hash",
-    "location_ids": ["LOC-01J00000000000000000000005"]
+    "location_ids": ["LOC_<synthetic-id>"]
   },
   "location": {
-    "location_id": "LOC-01J00000000000000000000005",
+    "location_id": "LOC_<synthetic-id>",
     "printed_page": "12",
     "pdf_page": 14,
     "section": "Results",
@@ -400,18 +409,19 @@ Reuse means adapting the safety behavior, not preserving question-specific stora
 - `database/content_review_schema.json`: retained for legacy validation, then replaced by versioned canonical schemas.
 - `database/synthesis_drafts/*.json`: synthesis content remains question-level but must reference canonical evidence revisions and have immutable synthesis revisions.
 
-## Unresolved product-owner decisions
+## Resolved and unresolved product-owner decisions
 
-1. Choose ULID, UUIDv7, or another exact opaque-ID standard.
-2. Decide whether a source correction is always a new source version or may be modeled as a related correction document plus affected revisions.
-3. Define the semantic boundary between a corrected revision and a new evidence item.
-4. Decide whether question mappings require independent specialist approval.
-5. Define required review quorum by evidence type and risk.
-6. Decide whether secondary-citation-only evidence can enter a Pack.
-7. Define retention and publication policy for reviewer identity and comments.
-8. Select initial hash algorithms and canonicalization profiles, including upgrade behavior.
-9. Define whether figure digitization is permitted and its validation standard.
-10. Define source-rights constraints on storing exact quotations and cropped table/figure artifacts in Packs.
+ADR-006 resolves the opaque-ID abstraction, independent classification/state-machine vocabularies, Evidence Item/revision boundary, and correction/erratum/source-version rules.
+
+The following decisions remain unresolved:
+
+1. Decide whether question mappings require independent specialist approval.
+2. Define required review quorum by evidence type and risk.
+3. Decide whether secondary-citation-only evidence can enter a Pack.
+4. Define retention and publication policy for reviewer identity and comments.
+5. Select initial hash algorithms and canonicalization profiles, including upgrade behavior.
+6. Define whether figure digitization is permitted and its validation standard.
+7. Define source-rights constraints on storing exact quotations and cropped table/figure artifacts in Packs.
 
 ## Acceptance criteria for implementation
 

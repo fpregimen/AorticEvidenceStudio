@@ -211,19 +211,20 @@ Reviewer identity must be available for governance and audit. Whether it is disp
 
 ## 7. Evidence classification and labeling
 
-AES must store and display the following categories as distinct states, not as interchangeable labels:
+AES stores evidence authority/type, specialist review decision, and source/reference verification status as three independent dimensions. They must not be collapsed into one generic `Validated` state.
 
-| Category | Meaning | Pack eligibility |
+| Evidence authority/type | Meaning |
 |---|---|---|
-| Guideline recommendation directly verified | The exact recommendation was checked in the original guideline version | Eligible after required approval |
-| Underlying primary evidence verified | The original primary study or document supporting a statement was independently reviewed | Eligible after required approval |
-| Secondary citation only | A guideline, review, or other secondary source cites or summarizes the primary source, but that primary source was not independently verified | Eligible only if policy permits, with explicit secondary-only labeling |
-| Primary source not verified | The claimed primary source has not completed identity and content verification | Not eligible as primary-verified evidence |
-| Citation mismatch | The cited source does not support the attributed statement, location, population, endpoint, or identity | Not eligible; requires correction or exclusion |
-| Expert interpretation | A specialist's contextual interpretation or application of published evidence | Stored separately; never labeled published evidence |
-| AI synthesis | Machine-generated combination, summary, or explanation | Stored separately; never labeled published evidence or specialist approval |
+| Guideline recommendation | A recommendation issued by a guideline body |
+| Primary study result | A result reported by a primary study |
+| Systematic review synthesis | A secondary synthesis across studies |
+| Regulatory statement | A statement from an identified regulator and jurisdiction |
+| IFU requirement | A requirement from an identified device IFU version and jurisdiction |
+| Expert interpretation | A specialist's contextual interpretation; never mislabeled as published evidence |
 
-An evidence item may have multiple provenance relationships, but each displayed assertion must carry one clear authority label and traceable supporting records.
+Specialist review decisions are limited to `Pending`, `Approved`, `Needs correction`, and `Excluded`. Source/reference verification status is separately one of: original source verified, underlying primary evidence verified, secondary citation only, primary source not yet verified, unable to verify, citation mismatch, or conflicting interpretation. AI synthesis remains separately typed generated content and never receives published-evidence or specialist-approval authority.
+
+An evidence item may have multiple provenance relationships, but each displayed assertion must carry one clear authority/type and traceable verification and review records.
 
 ## 8. Reference-chain requirements
 
@@ -237,9 +238,17 @@ AES must reduce uncertain citation chaining by representing reference chains exp
 - The system must never infer that every cited primary source supports the secondary source's exact wording.
 - Question synthesis may traverse only relationships permitted by publication and evidence-classification policy.
 
-## 9. Evidence lifecycle
+## 9. Evidence lifecycles
 
-The canonical lifecycle is:
+Lifecycle dimensions are separate:
+
+- **Source:** Active, Superseded, Withdrawn.
+- **Evidence review:** Draft, Pending, Needs correction, Approved, Excluded.
+- **Publication:** Unpublished, Release candidate, Published, Superseded, Retired.
+- **Dispute:** None, Open, Resolved.
+- **Evidence Pack:** Draft, Validated, Signed, Published, Revoked.
+
+The lifecycle workflow is:
 
 1. Register source identity and acquisition metadata.
 2. Verify source identity and version.
@@ -258,24 +267,7 @@ The canonical lifecycle is:
 15. Monitor freshness, corrections, withdrawals, and newly resolved reference chains.
 16. Supersede through a new revision and new Pack release; never rewrite prior Packs.
 
-```mermaid
-stateDiagram-v2
-    [*] --> Registered
-    Registered --> IdentityVerified: core identifiers match
-    Registered --> IdentityMismatch: conflicting identity
-    IdentityVerified --> Extracted: exact text and locations recorded
-    Extracted --> SpecialistReview
-    SpecialistReview --> CorrectionRequired
-    CorrectionRequired --> Extracted: new revision
-    SpecialistReview --> Excluded
-    SpecialistReview --> Approved
-    Approved --> PackEligible: publication policy passes
-    PackEligible --> Published: signed Pack released
-    Published --> Superseded: correction or newer source revision
-    Superseded --> Extracted: successor revision
-    IdentityMismatch --> [*]
-    Excluded --> [*]
-```
+Eligibility is a computed policy result, not a state in any lifecycle. The detailed transition contracts are governed by ADR-006 and the canonical data model.
 
 ## 10. Authoring-to-Pack publication requirements
 

@@ -83,7 +83,7 @@ Claims must be atomic enough that one specialist decision can apply to the entir
 
 ### Guideline recommendations
 
-Require exact recommendation wording, recommendation identifier, class/strength, evidence level, table/section location, edition/version, issuing body, and source-language text. Supporting narrative and cited primary evidence are separate evidence items and authority classifications.
+Require exact recommendation wording, recommendation identifier, class/strength, evidence level, table/section location, edition/version, issuing body, and source-language text. Supporting narrative and cited primary evidence are separate evidence items with separately recorded authority/type and verification status.
 
 ### Numerical outcomes
 
@@ -103,7 +103,7 @@ Require document revision, jurisdiction, regulator/manufacturer, official identi
 
 ### Secondary sources
 
-A guideline, review, or meta-analysis may be directly verified as a secondary source. That does not make the cited primary study verified. The evidence record must point to reference-chain verification and carry the appropriate authority classification.
+A guideline, review, or meta-analysis may be directly verified as a secondary source. That does not make the cited primary study verified. The evidence record must point to reference-chain verification and carry separate authority/type and verification status.
 
 ## Specialist validation record
 
@@ -134,10 +134,10 @@ Inspection flags are tri-state: `yes`, `no`, or `not_applicable`. They must not 
 - `Approved`: transcription, source identity, location, scope, and classification satisfy policy.
 - `Needs correction`: a correctable problem prevents approval.
 - `Excluded`: intentionally not eligible for use, with rationale.
-- `Disputed`: qualified disagreement remains unresolved.
-- `Retired`: previously usable evidence is no longer eligible prospectively.
 
 Existing application decisions may map into this vocabulary during migration, but migration must not create new approvals.
+
+`Disputed` and `Retired` are not specialist review decisions. Disputes use the independent None/Open/Resolved dispute lifecycle. Retirement uses the independent Unpublished/Release candidate/Published/Superseded/Retired publication lifecycle.
 
 ### Release editor
 
@@ -153,24 +153,46 @@ Publication requires a release-editor record containing:
 
 Release editing verifies publication controls; it does not replace specialist medical review.
 
-## Evidence-authority classifications
+## Independent evidence authority and verification classifications
 
-These values are mutually distinguishable and must not be collapsed into a generic `validated` flag.
+Evidence authority/type, specialist review decision, and verification status are independent and must not be collapsed into a generic `Validated` flag.
 
-| Classification | Required meaning | Fully primary-source verified? |
+### Evidence authority/type
+
+| Authority/type | Required meaning |
 |---|---|---|
-| `guideline_recommendation_directly_verified` | Exact recommendation checked in the original guideline version | No; verifies the guideline recommendation itself |
-| `primary_evidence_directly_verified` | Claim/result checked directly in its original primary source | Yes |
-| `underlying_primary_evidence_verified` | A secondary assertion has a verified chain to supporting primary evidence | Yes for the linked primary support, subject to chain scope |
-| `secondary_citation_only` | Secondary source checked; cited primary source not independently checked | No |
-| `primary_source_not_yet_verified` | Candidate primary source identified but verification incomplete | No |
-| `unable_to_verify` | Required source/version/location could not be obtained or resolved | No |
-| `citation_mismatch` | Citation does not support the inherited claim or resolves to the wrong source | No |
-| `conflicting_interpretation` | Qualified interpretations conflict and remain unresolved | No unless a Pack policy permits explicit dispute content |
-| `expert_interpretation` | Human contextual interpretation | Not published evidence |
-| `ai_synthesis` | Machine-generated synthesis | Not published evidence |
+| `guideline_recommendation` | Recommendation issued by an identified guideline body and version |
+| `primary_study_result` | Result reported by an identified primary study |
+| `systematic_review_synthesis` | Synthesis reported by an identified systematic review |
+| `regulatory_statement` | Statement from an identified regulator, version, and jurisdiction |
+| `ifu_requirement` | Requirement from an identified IFU version and jurisdiction |
+| `expert_interpretation` | Human contextual interpretation, stored separately from published evidence |
+
+AI synthesis remains a distinct generated-content type outside the evidence-authority vocabulary and is never published evidence or specialist approval.
+
+### Source and reference verification status
+
+| Verification status | Required meaning |
+|---|---|
+| `original_source_verified` | Exact assertion and provenance checked against its original source version |
+| `underlying_primary_evidence_verified` | A secondary assertion has a completed, scoped verified chain to supporting primary evidence |
+| `secondary_citation_only` | Secondary source checked; cited primary source not independently checked |
+| `primary_source_not_yet_verified` | Candidate primary source identified but verification incomplete |
+| `unable_to_verify` | Required source/version/location could not be obtained or resolved |
+| `citation_mismatch` | Citation does not support the inherited claim or resolves to the wrong source |
+| `conflicting_interpretation` | Qualified interpretations conflict and the conflict remains explicit |
 
 Secondary-source-only evidence must never display a badge, filter, field, or wording that implies full primary-source verification.
+
+## Independent lifecycle states
+
+- **Source:** Active, Superseded, Withdrawn.
+- **Evidence review:** Draft, Pending, Needs correction, Approved, Excluded.
+- **Publication:** Unpublished, Release candidate, Published, Superseded, Retired.
+- **Dispute:** None, Open, Resolved.
+- **Evidence Pack:** Draft, Validated, Signed, Published, Revoked.
+
+Eligibility is computed and policy-versioned; it is not a lifecycle or verification value.
 
 ## Approval completeness
 
@@ -184,7 +206,7 @@ An `Approved` decision is invalid unless:
 - source-file and supporting-text hashes are present and reproducible;
 - location exceeds page-only provenance;
 - required table/figure/supplement context is present;
-- authority classification is explicit;
+- evidence authority/type and verification status are explicit;
 - evidence meaning preserves population, phase, endpoint, timing, and uncertainty;
 - no unresolved citation mismatch applies to the asserted authority;
 - comments address any material warning;
@@ -199,7 +221,9 @@ Client and server validation must enforce the same substantive rules. Server enf
 - Approval never transfers automatically to the new revision.
 - The old revision remains linked through `supersedes`/`superseded_by` and to all historical Packs.
 - A correction record states whether the change affects transcription, location, classification, interpretation, numerical value, citation chain, translation, or publication eligibility.
-- Disputes and retirement append state relationships and audit events; they do not delete content.
+- A correction affecting an evidence revision requires a new immutable revision, specialist re-review, new approval, and publication only through a later Pack.
+- Errata and corrigenda link explicitly to the affected Source or Source Version. An official corrected publication is a Source Version; every byte-distinct inspected rendition is a distinct Source File.
+- Disputes and retirement use their independent lifecycle states and append audit events; they do not delete content.
 
 ## Publication eligibility
 
@@ -207,7 +231,7 @@ Only approved evidence revisions may be candidates for an Evidence Pack. Eligibi
 
 - current, non-retired revision;
 - satisfied review quorum;
-- permissible authority classification;
+- permissible evidence authority/type and verification status;
 - resolved required reference checks;
 - source-rights clearance for included text and metadata;
 - no restricted path, source file, credential, or reviewer-only note;
@@ -220,8 +244,9 @@ Whether `secondary_citation_only` and explicit disputes may appear in a Pack is 
 
 ```json
 {
-  "revision_id": "EVI-01J00000000000000000000004@r1",
-  "authority_classification": "primary_evidence_directly_verified",
+  "revision_id": "EVI_<synthetic-id>@r1",
+  "evidence_authority_type": "primary_study_result",
+  "verification_status": "original_source_verified",
   "assertion": "Synthetic coating retained 90 units at day 30.",
   "exact_supporting_quotation": "At day 30, coating retention was 90 units.",
   "supporting_text_hash": {
@@ -240,7 +265,7 @@ Whether `secondary_citation_only` and explicit disputes may appear in a Pack is 
     "footnote": "Units are synthetic"
   },
   "specialist_review": {
-    "reviewer_id": "RVR-01J00000000000000000000010",
+    "reviewer_id": "RVR_<synthetic-id>",
     "specialty": "Synthetic materials review",
     "role": "specialist_reviewer",
     "decision": "Approved",
@@ -277,7 +302,7 @@ Whether `secondary_citation_only` and explicit disputes may appear in a Pack is 
 - A direct guideline recommendation cannot be mislabeled as verified underlying primary evidence.
 - Secondary-only evidence cannot be counted or displayed as primary verified.
 - Table and figure items fail their context-specific validation when coordinates or context are incomplete.
-- Changing quotation, location, numerical result, or authority classification requires a new revision and review.
+- Changing quotation, location, numerical result, authority/type, or verification status requires a new revision and review.
 - Historical review and publication state remains reconstructable after correction.
 - Restricted source-file information cannot enter a Pack candidate.
 - Release-editor action cannot create or substitute for specialist approval.

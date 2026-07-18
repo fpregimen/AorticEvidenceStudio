@@ -1,23 +1,28 @@
 # Aortic Evidence Studio Architecture Readiness Review
 
-**Review date:** 2026-07-17  
-**Scope:** All Markdown architecture, requirements, workflow, migration, safety, handoff, and ADR documents under `docs/` and `docs/adr/`  
-**Purpose:** Final consistency and implementation-readiness review before Phase 1 canonical-model work  
-**Status:** Review record; recommendations in this document do not change an approved architecture decision
+**Review date:** 2026-07-17
+
+**Scope:** All Markdown architecture, requirements, workflow, migration, safety, handoff, and ADR documents under `docs/` and `docs/adr/`
+
+**Purpose:** Final consistency and implementation-readiness review before Phase 1 canonical-model work
+
+**Status:** Review record synchronized with approved ADR-006; remaining recommendations do not change an approved architecture decision
 
 ## 1. Executive conclusion
 
-The target architecture is **ready for Phase 1 with the listed product-owner decisions**. Its major safety boundaries are consistent: private authoring data remains separate from the commercial application; original sources are reviewed manually; evidence is immutable and revisioned; only eligible, released evidence enters a signed Evidence Pack; commercial retrieval is Pack-local by default; live search is separately labeled; and Q02/Q03 remain compatibility and regression cases rather than templates for further question-specific duplication.
+The target architecture is **fully unblocked for the limited Phase 1 boundary in Section 6**. Its major safety boundaries are consistent: private authoring data remains separate from the commercial application; original sources are reviewed manually; evidence is immutable and revisioned; only eligible, released evidence enters a signed Evidence Pack; commercial retrieval is Pack-local by default; live search is separately labeled; and Q02/Q03 remain compatibility and regression cases rather than templates for further question-specific duplication.
 
 Phase 1 must not begin as an implicit migration. It is limited to a new, vendor-neutral canonical TypeScript model, validation, read-only compatibility adapters, duplicate-candidate reporting, and synthetic tests. Existing medical records and application behavior remain authoritative and unchanged.
 
-Five decisions require product-owner approval before Phase 1 implementation choices are frozen:
+The product owner approved the five former blocking decisions, recorded formally in ADR-006:
 
 1. The canonical authority/validation classification vocabulary.
 2. Separation and names of source, evidence-revision, review-decision, and publication lifecycle states.
 3. The stable opaque identifier format and revision notation.
 4. The boundary between a new Evidence Item and a new Evidence Item Revision.
-5. Whether a correction/erratum is a Source Version, a related Source, or either under explicit rules.
+5. Correction, erratum, Source Version, Source File, and affected Evidence Revision rules.
+
+No remaining issue in this review blocks Phase 1 as narrowly defined. All deferred decisions remain unresolved and continue to block only their applicable later migration, cloud, Pack, or commercial phase.
 
 ## 2. Documents reviewed and interpretation rule
 
@@ -41,9 +46,9 @@ The remaining documents describe current behavior, earlier requirements, operati
 | Area | Consistency assessment | Readiness effect |
 |---|---|---|
 | Canonical entity names | Core entities align; several supporting entities and aliases need a single registry | Phase 1 decision needed |
-| Identifiers and revisions | Direction is consistent; opaque format and some revision forms remain undecided | Phase 1 decision needed |
-| Evidence lifecycle | Lifecycle intent aligns; state vocabularies currently mix separate state machines | Phase 1 decision needed |
-| Validation and authority | Safety intent aligns; enumerations and labels differ | Phase 1 decision needed |
+| Identifiers and revisions | Resolved by ADR-006: opaque typed UUIDv7-compatible abstraction and `EVI_<id>@rN` | Phase 1 unblocked |
+| Evidence lifecycle | Resolved by ADR-006 as five independent state machines | Phase 1 unblocked |
+| Validation and authority | Resolved by ADR-006 as separate authority/type, review-decision, and verification dimensions | Phase 1 unblocked |
 | Reviewer/release-editor roles | Separation of duties is consistent; quorum and exact publication handoff remain open | Model can support policy without choosing it |
 | Signing boundary | Signer separation is consistent; artifact/signature hashing has a circularity ambiguity | Not a Phase 1 blocker; blocks Pack implementation |
 | Pack contents/exclusions | Primary boundary is consistent; interpretation and secondary-only eligibility need policy decisions | Decide before Pack implementation |
@@ -72,37 +77,38 @@ No issue below is resolved merely by its recommended resolution. “Product-owne
 - **Recommended resolution:** Phase 1 should create one canonical vocabulary module and entity-to-ID registry; other schemas import or derive from it.
 - **Product-owner approval required:** No for consolidation; Yes if an entity is added, removed, or semantically changed.
 
-### AR-03 — Stable identifier format is unresolved
+### AR-03 — Stable identifier format — resolved by ADR-006
 
 - **Documents involved:** `CANONICAL_EVIDENCE_DATA_MODEL.md`, `Q02_Q03_CANONICAL_MIGRATION_DESIGN.md`, and `IMPLEMENTATION_PHASES_AND_ACCEPTANCE_CRITERIA.md`.
-- **Statements:** canonical identifiers are stable and opaque, with examples such as `SRC-*`, `SRV-*`, and `EVI-*`; ULID versus UUIDv7 remains open. Existing `AES-*` IDs are preserved as aliases.
+- **Approved resolution:** canonical identifiers are opaque and immutable, use typed prefixes including `SRC_`, `SRV_`, `SFL_`, `EVI_`, `REV_`, `LOC_`, `RFC_`, and `RVR_`, and use a UUIDv7-compatible abstraction without permanent library coupling. Existing `AES-*` and Q02/Q03 identifiers remain immutable legacy aliases/provenance.
 - **Risk:** persisted identifiers could require an avoidable migration, sorting behavior may differ, and unsafe parsing may be implemented inconsistently.
-- **Recommended resolution:** choose one opaque format, prefix grammar, case rule, validation rule, and non-reuse policy before Phase 1 fixtures become contractual. Preserve `AES-*` as external aliases, not canonical IDs.
-- **Product-owner approval required:** Yes.
+- **Implementation consequence:** Phase 1 centralizes prefix grammar, case, parsing, validation, and non-reuse behavior under the approved abstraction. It preserves `AES-*` as external aliases, not canonical IDs.
+- **Product-owner approval required:** Completed.
 
-### AR-04 — Revision notation is not uniform across entity types
+### AR-04 — Revision notation — resolved by ADR-006
 
 - **Documents involved:** `CANONICAL_EVIDENCE_DATA_MODEL.md`, `Q02_Q03_CANONICAL_MIGRATION_DESIGN.md`, and Evidence Pack documents.
 - **Statements:** evidence examples use `EVI@rN`; questions use `Q03@v1`; synthesis examples use forms such as `SYN-Q03-v1-1`; Pack versions use semantic-style release versions. Translation and source metadata revision notation is not fully specified.
 - **Risk:** APIs and audit links may compare unlike version concepts or accept ambiguous references.
 - **Recommended resolution:** distinguish immutable entity ID, monotonic entity revision, question definition version, and release version as separate branded types. Define formatting per type rather than one generic string.
-- **Product-owner approval required:** Yes for public notation; No for branded TypeScript separation.
+- **Approved resolution:** evidence revisions display as `EVI_<id>@rN`; other version concepts remain separately branded and are not silently collapsed.
+- **Product-owner approval required:** Completed for the Phase 1 evidence-revision notation.
 
-### AR-05 — Multiple lifecycle vocabularies combine different state machines
+### AR-05 — Multiple lifecycle vocabularies — resolved by ADR-006
 
 - **Documents involved:** `AES_MASTER_ARCHITECTURE_REQUIREMENTS.md`, `EXPERT_VALIDATED_EVIDENCE_STANDARD.md`, `AUTHORING_PORTAL_AUDIT_AND_GOVERNANCE.md`, `EVIDENCE_PACK_PUBLICATION_AND_RELEASE_PROCESS.md`, and `COMMERCIAL_APP_EVIDENCE_QUERY_MODEL.md`.
 - **Statements:** the master lifecycle includes Registered, Identity Verified/Mismatch, Extracted, Specialist Review, Correction Required, Excluded, Approved, Pack Eligible, Published, and Superseded. Review decisions include Pending, Approved, Needs correction, Excluded, Disputed, and Retired. Pack distribution additionally uses revoked and withdrawn.
 - **Risk:** an item could be called “Approved” simultaneously as a review decision and lifecycle state; “Retired” and “Superseded” may be applied at the wrong level; validation could permit impossible combinations.
-- **Recommended resolution:** define separate enums and transition rules for source identity, evidence revision workflow, specialist decision, eligibility computation, Pack candidate/release, and Pack distribution status.
-- **Product-owner approval required:** Yes.
+- **Approved resolution:** separate Source, Evidence review, Publication, Dispute, and Evidence Pack lifecycle state machines use the exact ADR-006 values. Eligibility remains computed.
+- **Product-owner approval required:** Completed.
 
-### AR-06 — Authority and validation classification names conflict
+### AR-06 — Authority and validation classification names — resolved by ADR-006
 
 - **Documents involved:** `AES_MASTER_ARCHITECTURE_REQUIREMENTS.md`, `EXPERT_VALIDATED_EVIDENCE_STANDARD.md`, `REFERENCE_CHAIN_VERIFICATION_STANDARD.md`, and `EVIDENCE_GROUNDED_SYNTHESIS_AND_CITATION_STANDARD.md`.
 - **Statements:** the master list includes “guideline recommendation directly verified,” “underlying primary evidence verified,” “secondary citation only,” “primary source not verified,” “citation mismatch,” “expert interpretation,” and “AI synthesis.” The detailed standard uses overlapping but different labels such as `primary_evidence_directly_verified`, `primary_source_not_yet_verified`, `unable_to_verify`, and `conflicting_interpretation`.
 - **Risk:** medical authority may be overstated, filters may disagree, and UI labels may imply verification that did not occur.
-- **Recommended resolution:** approve one machine-readable authority enum, separately model verification result and content type, and maintain explicit bilingual display labels.
-- **Product-owner approval required:** Yes, with clinical governance review.
+- **Approved resolution:** evidence authority/type, specialist review decision, and source/reference verification status are independent controlled vocabularies and cannot become generic `Validated`.
+- **Product-owner approval required:** Completed.
 
 ### AR-07 — “Specialist validated” and “Expert-Validated Evidence” are not explicitly mapped
 
@@ -112,21 +118,21 @@ No issue below is resolved merely by its recommended resolution. “Product-owne
 - **Recommended resolution:** define the exact scope of each label and a legacy-to-canonical display mapping. Never infer item-level Pack eligibility from synthesis approval.
 - **Product-owner approval required:** Yes.
 
-### AR-08 — Evidence Item versus Evidence Item Revision boundary is incomplete
+### AR-08 — Evidence Item versus Evidence Item Revision boundary — resolved by ADR-006
 
 - **Documents involved:** `CANONICAL_EVIDENCE_DATA_MODEL.md`, `EXPERT_VALIDATED_EVIDENCE_STANDARD.md`, and `Q02_Q03_CANONICAL_MIGRATION_DESIGN.md`.
 - **Statements:** a materially different proposition should become a new Evidence Item, while wording/location corrections should create a revision; “materially different” is not operationally defined.
 - **Risk:** contradictory claims may be overwritten as revisions, or harmless corrections may fragment reuse and audit history.
-- **Recommended resolution:** approve decision rules and examples covering changed population, intervention, comparator, outcome, time point, effect estimate, polarity, and source location.
-- **Product-owner approval required:** Yes, with clinical governance review.
+- **Approved resolution:** a correction creates a new immutable Evidence Revision; materially changed medical meaning, population, intervention, comparator, outcome, threshold, or distinct result requires a new Evidence Item. Approval never transfers.
+- **Product-owner approval required:** Completed.
 
-### AR-09 — Correction and erratum modeling is unresolved
+### AR-09 — Correction and erratum modeling — resolved by ADR-006
 
 - **Documents involved:** `CANONICAL_EVIDENCE_DATA_MODEL.md`, `SOURCE_IDENTITY_VALIDATION.md`, `REFERENCE_CHAIN_VERIFICATION_STANDARD.md`, and Pack specifications.
 - **Statements:** source versions model editions and publication versions, while a correction may be treated as a new Source Version or as a related correction document; no governing rule is selected.
 - **Risk:** corrected evidence may remain linked to the wrong source state, and Pack freshness or revocation decisions may be incomplete.
-- **Recommended resolution:** define correction, erratum, retraction, expression-of-concern, supplement, and new-edition relationships and their effect on evidence eligibility.
-- **Product-owner approval required:** Yes.
+- **Approved resolution:** Source, Source Version, and Source File are separate; errata/corrigenda link explicitly to affected sources/versions; an affected Evidence Revision requires a new revision, re-review, new approval, and later Pack while history is preserved.
+- **Product-owner approval required:** Completed. Retraction/expression-of-concern operational policy remains deferred and does not block Phase 1.
 
 ### AR-10 — Target source-location requirements are stricter than legacy approval validation
 
@@ -290,17 +296,17 @@ No issue below is resolved merely by its recommended resolution. “Product-owne
 
 ## 5. Consolidated product-owner decision register
 
-### 5.1 Must decide before Phase 1
+### 5.1 Decided before Phase 1
 
-| Decision | Related issues | Required output |
+| Approved decision | Related issues | Recorded outcome |
 |---|---|---|
-| Canonical authority and validation taxonomy | AR-06, AR-07 | One enum model, meanings, bilingual labels, and mapping from legacy terms |
+| Canonical authority, review, and verification separation | AR-06 | Independent vocabularies; no generic Validated state |
 | Separate lifecycle state machines | AR-05 | Named enums, owning entity, valid transitions, and forbidden combinations |
-| Stable identifier and revision policy | AR-03, AR-04 | Opaque format, prefixes, case, revision/version notation, alias rules |
+| Stable identifier and revision policy | AR-03, AR-04 | Typed opaque UUIDv7-compatible abstraction, `EVI_<id>@rN`, immutable legacy aliases |
 | Evidence Item versus revision boundary | AR-08 | Clinically reviewed decision rules and examples |
 | Source correction/erratum/version relationship | AR-09 | Relationship types and eligibility consequences |
 
-These decisions are necessary because Phase 1 creates types and validators that would otherwise encode accidental policy.
+All five decisions are approved in ADR-006. AR-07's user-facing mapping between legacy “Specialist validated” and future “Expert-Validated Evidence” remains unresolved but does not block non-UI, read-only Phase 1 modeling.
 
 ### 5.2 Can decide during Phase 1
 
@@ -454,7 +460,7 @@ Phase 1 must be additive and unreferenced by production routes by default. Rollb
 
 Phase 1 is complete only when:
 
-1. All five pre-Phase-1 product decisions are recorded and reflected consistently in types and validators.
+1. All five approved pre-Phase-1 product decisions in ADR-006 are reflected consistently in types and validators.
 2. One canonical vocabulary and identifier registry drives all new Phase 1 code.
 3. Validation produces structured, deterministic, reason-coded results.
 4. Existing Q02/Q03 records can be read without mutation and with counts/status matching current authoritative behavior.
@@ -477,7 +483,7 @@ Q02 and Q03 are suitable compatibility and regression inputs, but not migration 
 - No canonical gap report changes the original decision.
 - Rollback is selection of the existing reader, not reverse migration.
 
-Real migration remains blocked by AR-08, AR-09, AR-10, and AR-14 policy decisions and is outside Phase 1.
+Real migration remains outside Phase 1 and still requires AR-10 and AR-14 policy decisions plus separately authorized migration review. AR-08 and AR-09 are resolved by ADR-006.
 
 ## 8. Dependencies after Phase 1
 
@@ -489,8 +495,8 @@ The architecture documents identify the correct broad sequence, but implementati
 
 ## 9. Final readiness determination
 
-**Determination: Ready for Phase 1 with listed product-owner decisions.**
+**Determination: Phase 1 is fully unblocked within the exact limited boundary in Section 6.**
 
-There is no architectural reason to block additive, read-only canonical modeling once the five pre-Phase-1 decisions are approved. Phase 1 must retain the narrow boundary in Section 6. Pack cryptography, cloud governance, real evidence migration, and commercial synthesis are not ready for implementation and are intentionally deferred behind their issue-register decisions.
+The five former blockers are approved and recorded in ADR-006. No remaining contradiction blocks additive, read-only canonical modeling. Phase 1 must retain the narrow boundary in Section 6. Pack cryptography, cloud governance, real evidence migration, and commercial synthesis are not ready for implementation and remain intentionally deferred behind their issue-register decisions.
 
-This review does not approve a medical claim, alter an evidence authority classification, settle a product-owner decision, or authorize migration.
+This synchronization records only the five approved architecture decisions. It does not approve a medical claim, alter a stored evidence classification or specialist decision, settle any other product-owner decision, or authorize migration.

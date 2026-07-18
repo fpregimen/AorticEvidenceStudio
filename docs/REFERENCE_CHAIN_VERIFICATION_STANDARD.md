@@ -8,7 +8,7 @@ Example chain:
 
 `guideline recommendation → cited systematic review → cited primary study → original table, figure, or result`
 
-Every node and edge has independent identity, version, provenance, verification, and authority state.
+Every node and edge has independent identity, version, provenance, verification, authority/type, review decision, dispute, and publication state. These dimensions must never be collapsed into a generic `Validated` state.
 
 ## Core safeguards
 
@@ -131,6 +131,18 @@ flowchart TD
 
 Levels are descriptive milestones, not substitutes for detailed states.
 
+The canonical source/reference verification statuses exposed beyond this detailed chain workflow are:
+
+- `original_source_verified`;
+- `underlying_primary_evidence_verified`;
+- `secondary_citation_only`;
+- `primary_source_not_yet_verified`;
+- `unable_to_verify`;
+- `citation_mismatch`; and
+- `conflicting_interpretation`.
+
+These statuses summarize verified depth or a verification problem for a defined scope. They do not replace the detailed retrieval, support, and citation-match dimensions above, do not constitute a specialist review decision, and do not establish publication eligibility.
+
 ## Inherited-claim scope
 
 The verification question must be explicit. It includes:
@@ -188,6 +200,8 @@ Unable-to-retrieve evidence cannot be labeled primary-source verified. Metadata-
 - New source versions, corrected citations, changed inherited wording, changed target evidence, or changed support interpretation require a new chain/verification revision.
 - Previous verification remains immutable and linked to Packs that used it.
 - A source-file byte change requires location re-verification against the new file even when content appears unchanged.
+- Errata and corrigenda link explicitly to the affected source or source version. An official corrected publication is represented as a source version; a byte-distinct rendition is always a new source file.
+- If a correction affects an evidence revision, record the impact, create a new immutable evidence revision, require specialist re-review and new approval, and publish only through a later Pack. Approval does not transfer.
 - Updated reference chains affect future Pack releases only; prior Packs retain historical provenance and may receive revocation/supersession metadata.
 
 ## Publication and display
@@ -209,22 +223,22 @@ Unresolved chain counts must contribute to Pack quality metrics. A user must be 
 
 ```json
 {
-  "reference_chain_id": "RFC-01J00000000000000000000007",
-  "citing_revision_id": "EVI-01J00000000000000000000020@r1",
+  "reference_chain_id": "RFC_<synthetic-id>",
+  "citing_revision_id": "EVI_<synthetic-id>@r1",
   "citation_text_as_printed": "Example Review 2098;4:10-20",
   "citation_type": "direct",
   "inherited_claim": "Synthetic material retained performance at day 30.",
-  "resolved_target_source_version_id": "SRV-01J00000000000000000000021",
+  "resolved_target_source_version_id": "SRV_<synthetic-id>",
   "verification": {
-    "reference_verification_id": "RFV-01J00000000000000000000008",
+    "reference_verification_id": "<synthetic-reference-verification-id>",
     "retrieval_status": "retrieved",
     "citation_match_status": "match",
     "support_status": "supports_partially",
     "supported_scope": "Retention measurement only; no durability outcome",
-    "reviewer_id": "RVR-01J00000000000000000000010",
+    "reviewer_id": "RVR_<synthetic-id>",
     "verification_date": "2099-01-02",
     "original_source_confirmed": true,
-    "target_location_id": "LOC-01J00000000000000000000022"
+    "target_location_id": "LOC_<synthetic-id>"
   }
 }
 ```

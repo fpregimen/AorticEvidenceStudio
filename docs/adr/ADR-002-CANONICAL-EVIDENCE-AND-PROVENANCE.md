@@ -4,7 +4,7 @@
 - **Date:** 2026-07-17
 - **Decision owners:** Product owner, clinical evidence governance, and architecture governance
 - **Supersedes:** Question-owned source review as the target architecture; current Q02/Q03 implementation remains transitional
-- **Related:** `AES_MASTER_ARCHITECTURE_REQUIREMENTS.md`, `CANONICAL_EVIDENCE_DATA_MODEL.md`, `EXPERT_VALIDATED_EVIDENCE_STANDARD.md`, `REFERENCE_CHAIN_VERIFICATION_STANDARD.md`, `Q02_Q03_CANONICAL_MIGRATION_DESIGN.md`
+- **Related:** `AES_MASTER_ARCHITECTURE_REQUIREMENTS.md`, `CANONICAL_EVIDENCE_DATA_MODEL.md`, `EXPERT_VALIDATED_EVIDENCE_STANDARD.md`, `REFERENCE_CHAIN_VERIFICATION_STANDARD.md`, `Q02_Q03_CANONICAL_MIGRATION_DESIGN.md`, `ADR-006-PHASE-1-CANONICAL-IDENTITY-AND-LIFECYCLE-DECISIONS.md`
 
 ## Context
 
@@ -97,7 +97,8 @@ Q02/Q03 migration is non-destructive and fail-closed. Candidate evidence is neve
 
 ## Unresolved decisions
 
-- exact opaque-ID standard;
+The opaque UUIDv7-compatible ID abstraction, classification separation, lifecycle state machines, evidence item/revision boundary, and correction/source-version rules are resolved by ADR-006. The following remain unresolved:
+
 - review quorum and separation of duties;
 - Pack treatment of secondary-only or disputed evidence;
 - source-rights limits;
