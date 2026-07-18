@@ -14,10 +14,11 @@
     "review:open": "node --experimental-strip-types scripts/review-open.ts",
     "review:finalize": "node --experimental-strip-types scripts/review-finalize.ts",
     "test:review-workflow": "node --experimental-strip-types scripts/test-review-workflow.ts",
-    "test:canonical": "node --experimental-strip-types scripts/test-canonical-evidence.ts && node --experimental-strip-types scripts/test-migration-review.ts && node --experimental-strip-types scripts/test-authoring-portal.ts",
+    "test:canonical": "node --experimental-strip-types scripts/test-canonical-evidence.ts && node --experimental-strip-types scripts/test-migration-review.ts && node --experimental-strip-types scripts/test-authoring-portal.ts && node --conditions=react-server --experimental-strip-types scripts/test-node-pdf-extraction.ts",
     "report:canonical-candidates": "node --experimental-strip-types scripts/generate-q02-q03-canonical-candidates.ts"
   },
   "dependencies": {
+    "@napi-rs/canvas": "^1.0.2",
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.7",
     "next": "latest",
