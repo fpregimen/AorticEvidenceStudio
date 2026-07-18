@@ -1,0 +1,2 @@
+import{getExtractedPage}from"@/lib/authoring/payload-safe-pdf";
+export async function GET(request:Request,{params}:{params:Promise<{sourceFileId:string;pdfPage:string}>}){try{const values=await params,offset=Number(new URL(request.url).searchParams.get("offset")??0);return Response.json(await getExtractedPage(values.sourceFileId,Number(values.pdfPage),offset),{headers:{"cache-control":"private, no-store"}})}catch(error){return Response.json({error:error instanceof Error?error.message:"Page unavailable"},{status:404,headers:{"cache-control":"private, no-store"}})}}
